@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabañas del Bosque | Hub</title>
+    <!-- Google Fonts: Una manuscrita para el vibe y una limpia para lectura -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script> <!-- FontAwesome para iconos -->
+    <style>
+        :root {
+            --primary-bg: #121212;
+            --accent-color: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('TU_FOTO_DE_FONDO.jpg'); /* Aquí irá la foto de la cabaña */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        p.tagline {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card:hover {
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            transform: translateY(-3px);
+        }
+
+        /* Colores específicos para resaltar plataformas */
+        .airbnb:hover { background-color: #FF5A5F; border-color: #FF5A5F; color: white; }
+        .whatsapp:hover { background-color: #25D366; border-color: #25D366; color: white; }
+
+        .social-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.5rem;
+        }
+
+        .social-footer a {
+            color: white;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .social-footer a:hover {
+            opacity: 1;
+        }
+
+        /* Animación de entrada */
+        .fade-in {
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container fade-in">
+        <!-- Logo -->
+        <img src="TU_LOGO_CIRCULAR.png" alt="Cabañas del Bosque Logo" class="logo">
+        
+        <h1>Cabañas del Bosque</h1>
+        <p class="tagline">Un respiro en la montaña</p>
+
+        <div class="links-container">
+            <!-- Airbnb es el cierre de venta fuerte -->
+            <a href="LINK_AIRBNB" class="link-card airbnb">
+                <span>RESERVAR EN AIRBNB</span>
+            </a>
+
+            <!-- WhatsApp para servicio al cliente -->
+            <a href="https://wa.me/TU_NUMERO" class="link-card whatsapp">
+                <span>CONTACTAR POR WHATSAPP</span>
+            </a>
+
+            <!-- Instagram para ver el lifestyle -->
+            <a href="LINK_INSTAGRAM" class="link-card">
+                <span>SÍGUENOS EN INSTAGRAM</span>
+            </a>
+
+            <!-- Facebook -->
+            <a href="LINK_FACEBOOK" class="link-card">
+                <span>VISITA NUESTRO FACEBOOK</span>
+            </a>
+        </div>
+
+        <div class="social-footer">
+            <!-- Iconos pequeños si se desea -->
+            <p style="font-size: 0.7rem; opacity: 0.5; text-transform: uppercase;">San José, Costa Rica</p>
+        </div>
+    </div>
+
+</body>
+</html>
