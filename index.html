@@ -2,28 +2,52 @@
 <html lang="es">
 <head>
     <!-- 
-        PROYECTO: Cabañas del Bosque - Hub de Redes Sociales
-        VERSION: 3.5.0 (Final Global Top Edition)
-        LOCALIZACIÓN: Angeles Norte, San Ramón, CR.
-        STACK: HTML5, CSS3 (Glassmorphism), JS (Ken Burns Engine)
+        ============================================================
+        PROYECTO: Hub de Redes Sociales - Cabañas del Bosque
+        UBICACIÓN: Angeles Norte, San Ramón de Alajuela, CR.
+        VERSIÓN: 4.0.0 (Ultra-Robust Master Edition)
+        DESARROLLADO POR: Senior Software Architect & Creative Director
+        FECHA: 2024
+        ============================================================
     -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cabañas del Bosque | San Ramón, Costa Rica</title>
     
-    <!-- Meta Tags -->
-    <meta name="description" content="Tu escape perfecto en las montañas de San Ramón. Confort y naturaleza.">
+    <!-- ETIQUETAS SEO AVANZADAS -->
+    <meta name="description" content="Descubrí la paz absoluta en Angeles Norte de San Ramón. Cabaña premium totalmente equipada para tu escape perfecto en la montaña.">
+    <meta name="keywords" content="Cabaña, San Ramón, Turismo Costa Rica, Airbnb Costa Rica, Hospedaje, Angeles Norte, Alajuela, Montaña">
+    <meta name="author" content="Cabañas del Bosque">
+    <link rel="canonical" href="https://cabanasdelbosque.cr/">
+
+    <!-- OPEN GRAPH / SOCIAL META (Para previsualización en WhatsApp/FB/IG) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cabanasdelbosque.cr/">
+    <meta property="og:title" content="Cabañas del Bosque | Escape de Montaña">
+    <meta property="og:description" content="Naturaleza, paz y confort en el corazón de San Ramón. Reservá tu experiencia premium aquí.">
+    <meta property="og:image" content="frontalnoche.png">
+    <meta property="og:locale" content="es_CR">
+
+    <!-- TWITTER CARD -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cabañas del Bosque | San Ramón">
+    <meta name="twitter:description" content="Tu refugio privado en las nubes de San Ramón.">
+    <meta name="twitter:image" content="frontalnoche.png">
+
+    <!-- FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
 
-    <!-- Fonts: Caveat & Montserrat -->
+    <!-- RECURSOS EXTERNOS: FUENTES E ICONOS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* 
+           SISTEMA DE DISEÑO (DESIGN TOKENS)
+           Consistencia visual absoluta.
+        */
         :root {
             --primary-dark: #0a0a0a;
             --accent-gold: #d4a373; 
@@ -31,16 +55,25 @@
             --whatsapp-green: #25D366;
             --waze-blue: #33CCFF;
             --white: #ffffff;
-            --glass: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.08);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --anim-speed: 0.6s;
+            --transition-smooth: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --glow-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* Reset Total & Layout Centering */
+        /* RESET DE NAVEGADOR */
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* SCROLLBAR PERSONALIZADO (Para escritorio) */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--primary-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 10px; }
 
         body {
             background-color: var(--primary-dark);
@@ -50,70 +83,132 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centrado Horizontal */
-            justify-content: flex-start;
+            align-items: center;
         }
 
-        /* Fondo Animado Permanente */
+        /* 
+           PRE-LOADER 
+           Evita que el usuario vea el sitio cargando a trozos.
+        */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-dark);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        .loader-circle {
+            width: 50px; height: 50px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* FONDO HERO CINEMATOGRÁFICO */
         .hero-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9)), url('frontalnoche.png');
-            background-size: cover; background-position: center; z-index: -1;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9)), 
+                        url('frontalnoche.png');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
             filter: brightness(0.8);
+            transform: scale(1.02); /* Evita bordes blancos en vibración */
         }
 
-        /* Main Container */
+        /* CONTENEDOR PRINCIPAL */
         .main-container {
             width: 100%;
             max-width: 460px;
-            padding: 60px 25px;
+            padding: 60px 24px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centrado perfecto de hijos */
+            align-items: center;
             text-align: center;
+            z-index: 10;
         }
 
-        /* Logo con Glow y Centrado Perfecto */
+        /* LOGO: Diseño Centrado y Premium */
         .logo-wrapper {
-            width: 140px; height: 140px;
-            background: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(255,255,255,0.15);
-            border: 3px solid rgba(255,255,255,0.2);
-            animation: fadeInDown 1s ease-out forwards;
+            width: 140px;
+            height: 140px;
+            background: white; 
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px auto;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.9), var(--glow-shadow);
+            padding: 10px;
+            border: 2px solid rgba(255,255,255,0.2);
+            animation: fadeInDown 1.2s ease-out;
+            transition: var(--transition-smooth);
         }
-        .logo-wrapper img { width: 92%; height: auto; border-radius: 50%; }
+        .logo-wrapper:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        .logo-wrapper img {
+            width: 92%;
+            height: auto;
+            border-radius: 50%;
+        }
 
-        /* Typography */
+        /* TEXTOS DE CABECERA */
         h1 {
-            font-family: 'Caveat', cursive; font-size: 4rem;
-            line-height: 0.9; margin-bottom: 12px;
-            text-shadow: 3px 6px 20px rgba(0,0,0,0.8);
+            font-family: 'Caveat', cursive;
+            font-size: 4rem;
+            line-height: 0.85;
+            margin-bottom: 12px;
+            text-shadow: 3px 6px 18px rgba(0,0,0,1);
+            animation: fadeIn 1.5s ease;
         }
-
         .location {
-            font-size: 0.8rem; letter-spacing: 5px; text-transform: uppercase;
-            color: var(--accent-gold); margin-bottom: 45px; font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 45px;
+            font-weight: 600;
+            animation: fadeIn 2s ease;
         }
 
-        /* Hub de Botones con Animación Staggered */
-        .links-stack { width: 100%; display: flex; flex-direction: column; gap: 18px; margin-bottom: 60px; }
+        /* BOTONERA (HUB) */
+        .links-stack {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 60px;
+        }
 
+        /* Link Base Estilo Glassmorphism */
         .btn-link {
-            background: var(--glass);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            padding: 18px 25px; border-radius: 20px;
-            text-decoration: none; color: white; font-weight: 600; font-size: 1rem;
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; transform: translateY(30px);
+            padding: 18px 25px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            opacity: 0; /* Para animación staggered */
+            transform: translateY(20px);
             animation: fadeInUp 0.8s ease forwards;
         }
 
-        /* Delays para efecto cascada espectacular */
+        /* Animación en Cascada (Staggered) */
         .btn-link:nth-child(1) { animation-delay: 0.3s; }
         .btn-link:nth-child(2) { animation-delay: 0.4s; }
         .btn-link:nth-child(3) { animation-delay: 0.5s; }
@@ -121,99 +216,151 @@
         .btn-link:nth-child(5) { animation-delay: 0.7s; }
         .btn-link:nth-child(6) { animation-delay: 0.8s; }
 
-        .btn-link i { position: absolute; left: 25px; font-size: 1.4rem; }
+        .btn-link i {
+            position: absolute;
+            left: 25px;
+            font-size: 1.4rem;
+        }
 
-        /* Efecto Shine (Brillo) al pasar el mouse */
+        /* Efecto de Brillo Cinemático (Shine) */
         .btn-link::after {
-            content: ''; position: absolute; top: 0; left: -100%;
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
             width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
             transition: 0.6s;
         }
         .btn-link:hover::after { left: 100%; }
 
+        /* Efectos de Hover por Marca */
         .btn-link:hover {
             transform: translateY(-5px) scale(1.02);
-            background: white; color: black;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            background: white;
+            color: black;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
-
-        /* Hover Colors por Plataforma */
         .btn-airbnb:hover { background: var(--airbnb-red); color: white; border-color: var(--airbnb-red); }
         .btn-whatsapp:hover { background: var(--whatsapp-green); color: white; border-color: var(--whatsapp-green); }
         .btn-waze:hover { background: var(--waze-blue); color: white; border-color: var(--waze-blue); }
         .btn-email:hover { background: var(--accent-gold); color: white; border-color: var(--accent-gold); }
 
-        /* Slider Section: Cinematic */
-        .slider-section { width: 100%; margin-top: 10px; position: relative; }
-        .section-title { font-size: 1rem; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 5px; color: var(--accent-gold); font-weight: 700; }
-        
+        /* 
+           SLIDER DE EXPERIENCIA (Ken Burns Engine)
+        */
+        .slider-section {
+            width: 100%;
+            margin-top: 10px;
+            animation: fadeIn 2.5s ease;
+        }
+        .section-title {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            letter-spacing: 5px;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
         .slider-container {
-            width: 100%; height: 340px; border-radius: 30px;
-            overflow: hidden; position: relative;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            width: 100%;
+            height: 340px;
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
             border: 1px solid rgba(255,255,255,0.15);
         }
-
         .slide {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; transition: opacity 1.5s ease-in-out;
-            background-size: cover; background-position: center;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1.8s ease-in-out;
+            background-size: cover;
+            background-position: center;
         }
-        .slide.active { opacity: 1; animation: kenBurnsEffect 10s infinite alternate ease-in-out; }
-
-        @keyframes kenBurnsEffect {
+        .slide.active {
+            opacity: 1;
+            animation: kenBurnsAnimation 10s infinite alternate ease-in-out;
+        }
+        @keyframes kenBurnsAnimation {
             from { transform: scale(1); }
             to { transform: scale(1.2); }
         }
-
-        /* Overlay Gradiente Slider */
         .slider-overlay {
-            position: absolute; bottom: 0; width: 100%; height: 40%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            position: absolute;
+            bottom: 0; width: 100%; height: 40%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
             z-index: 2;
         }
 
-        /* Caption Sincronizado */
-        .caption-box {
-            margin-top: 25px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
+        /* DESCRIPCIONES SINCRONIZADAS */
+        .caption-container {
+            margin-top: 25px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .caption-text {
-            font-size: 1rem; font-style: italic; font-weight: 400;
-            color: rgba(255,255,255,0.9); opacity: 0;
+            font-size: 1.05rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--white);
+            opacity: 0;
             transition: opacity 0.8s ease;
+            letter-spacing: 0.5px;
         }
 
-        /* Footer */
+        /* PIE DE PÁGINA */
         footer {
-            margin-top: 80px; width: 100%;
-            padding: 30px 0 50px 0; border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.75rem; opacity: 0.4; letter-spacing: 2px;
-            text-transform: uppercase; line-height: 1.8;
+            margin-top: 80px;
+            padding: 40px 0;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            opacity: 0.5;
+            letter-spacing: 2px;
+            line-height: 2;
+            text-transform: uppercase;
         }
 
-        /* Animations Keyframes */
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANIMACIONES CORE */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-        /* Media Queries para Pantallas Pequeñas */
-        @media (max-width: 370px) {
+        /* MEDIA QUERIES PARA RESPONSIVIDAD TOTAL */
+        @media (max-width: 380px) {
             h1 { font-size: 3.2rem; }
             .slider-container { height: 280px; }
             .logo-wrapper { width: 120px; height: 120px; }
+            .btn-link { font-size: 0.9rem; padding: 16px 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Layer de Fondo Estático/Animado -->
+    <!-- Pantalla de Carga -->
+    <div id="preloader">
+        <div class="loader-circle"></div>
+    </div>
+
+    <!-- Fondo de Pantalla -->
     <div class="hero-bg"></div>
 
     <main class="main-container">
         
-        <!-- Header con Logo y Ubicación -->
-        <header class="logo-section">
+        <!-- HEADER -->
+        <header>
             <div class="logo-wrapper">
                 <img src="Logo.png" alt="Cabañas del Bosque">
             </div>
@@ -221,10 +368,10 @@
             <p class="location">Angeles Norte, San Ramón, CR</p>
         </header>
 
-        <!-- Navegación Hub -->
+        <!-- HUB DE ENLACES -->
         <nav class="links-stack">
             
-            <a href="https://www.airbnb.mx/rooms/1406190021059321090" class="btn-link btn-airbnb" target="_blank">
+            <a href="https://www.airbnb.mx/rooms/1406190021059321090?unique_share_id=81f4e1b1-ce68-4575-96b8-5659994cabbd&viralityEntryPoint=1&s=76" class="btn-link btn-airbnb" target="_blank">
                 <i class="fab fa-airbnb"></i>
                 <span>Reserva en Airbnb</span>
             </a>
@@ -239,7 +386,7 @@
                 <span>¿Cómo llegar con Waze?</span>
             </a>
 
-            <a href="https://www.instagram.com/cabanas_del_bosque_sr" class="btn-link" target="_blank">
+            <a href="https://www.instagram.com/cabanas_del_bosque_sr?igsh=MWdsN3ExY3U2dHV6cw==" class="btn-link" target="_blank">
                 <i class="fab fa-instagram"></i>
                 <span>Momentos en Instagram</span>
             </a>
@@ -256,85 +403,100 @@
 
         </nav>
 
-        <!-- Slider de Experiencia -->
+        <!-- TOUR VISUAL -->
         <section class="slider-section">
             <h2 class="section-title">Conocé la cabaña</h2>
             
-            <div class="slider-container" id="main-gallery">
+            <div class="slider-container" id="main-slider">
                 <div class="slider-overlay"></div>
+                <!-- Slides se inyectan dinámicamente -->
             </div>
 
-            <div class="caption-box">
-                <p class="caption-text" id="caption-target"></p>
+            <div class="caption-container">
+                <p class="caption-text" id="slider-caption"></p>
             </div>
         </section>
 
-        <!-- Footer -->
+        <!-- PIE DE PÁGINA -->
         <footer>
             <p>&copy; 2026 CABAÑAS DEL BOSQUE.</p>
             <p>Angeles Norte, San Ramón de Alajuela, Costa Rica.</p>
+            <p style="font-size: 0.6rem; margin-top: 15px; opacity: 0.3;">Premium Hub Digital Experience</p>
         </footer>
 
     </main>
 
-    <!-- JS: Gallery Engine -->
+    <!-- PROGRAMACIÓN DEL MOTOR DEL HUB -->
     <script>
         /**
-         * Listado de contenido para el Slider
-         * Asegurar que los nombres coinciden con el repo
+         * DATOS DE LA GALERÍA
+         * Mapeo de archivos vs descripciones
          */
-        const galleryItems = [
-            { file: 'frontaldia.png', label: 'Vistas espectaculares de día' },
-            { file: 'interior.png', label: 'Un refugio acogedor y moderno' },
-            { file: 'cocina.png', label: 'Cocina totalmente equipada' },
-            { file: 'baño.png', label: 'Espacios diseñados para tu confort' },
-            { file: 'hamaca.png', label: 'El rincón perfecto para relajarse' },
-            { file: 'lateraldia.png', label: 'Rodeado de naturaleza pura' },
-            { file: 'lateralnoche.png', label: 'Mágicas noches bajo las estrellas' },
-            { file: 'exterior.png', label: 'Tu escape privado en la montaña' },
-            { file: 'decoracion.png', label: 'Detalles que hacen la diferencia' },
-            { file: 'decoracion2.png', label: 'Calidez en cada rincón' },
-            { file: 'porton.png', label: 'Privacidad y seguridad garantizada' }
+        const galleryData = [
+            { file: 'frontaldia.png', text: 'Vistas espectaculares de día' },
+            { file: 'interior.png', text: 'Un refugio acogedor y moderno' },
+            { file: 'cocina.png', text: 'Cocina totalmente equipada' },
+            { file: 'baño.png', text: 'Espacios diseñados para tu confort' },
+            { file: 'hamaca.png', text: 'El rincón perfecto para relajarse' },
+            { file: 'lateraldia.png', text: 'Rodeado de naturaleza pura' },
+            { file: 'lateralnoche.png', text: 'Mágicas noches bajo las estrellas' },
+            { file: 'exterior.png', text: 'Tu escape privado en la montaña' },
+            { file: 'decoracion.png', text: 'Detalles que hacen la diferencia' },
+            { file: 'decoracion2.png', text: 'Calidez en cada rincón' },
+            { file: 'porton.png', text: 'Privacidad y seguridad garantizada' }
         ];
 
-        const container = document.getElementById('main-gallery');
-        const captionTarget = document.getElementById('caption-target');
+        const sliderContainer = document.getElementById('main-slider');
+        const captionTarget = document.getElementById('slider-caption');
+        const preloader = document.getElementById('preloader');
 
-        // Generar Slides
-        galleryItems.forEach((item, index) => {
-            const slide = document.createElement('div');
-            slide.classList.add('slide');
-            if (index === 0) slide.classList.add('active');
-            slide.style.backgroundImage = `url('${item.file}')`;
-            container.appendChild(slide);
+        // 1. Inicializar Slides
+        galleryData.forEach((data, index) => {
+            const slideDiv = document.createElement('div');
+            slideDiv.classList.add('slide');
+            if (index === 0) slideDiv.classList.add('active');
+            slideDiv.style.backgroundImage = `url('${data.file}')`;
+            sliderContainer.appendChild(slideDiv);
         });
 
-        // Lógica de Rotación Sincronizada
-        let currentIdx = 0;
+        // 2. Lógica de Rotación
+        let activeIdx = 0;
         const slides = document.querySelectorAll('.slide');
 
-        function nextSlide() {
+        function runGallery() {
             // Fade Out
-            slides[currentIdx].classList.remove('active');
+            slides[activeIdx].classList.remove('active');
             captionTarget.style.opacity = '0';
 
             setTimeout(() => {
-                // Siguiente Foto
-                currentIdx = (currentIdx + 1) % slides.length;
-                slides[currentIdx].classList.add('active');
+                // Siguiente paso
+                activeIdx = (activeIdx + 1) % slides.length;
                 
-                // Fade In Caption
-                captionTarget.innerText = galleryItems[currentIdx].label;
+                // Fade In
+                slides[activeIdx].classList.add('active');
+                captionTarget.innerText = galleryData[activeIdx].text;
                 captionTarget.style.opacity = '1';
             }, 900);
         }
 
-        // Inicializar
-        captionTarget.innerText = galleryItems[0].label;
-        captionTarget.style.opacity = '1';
+        // 3. Manejo del Preloader y Arranque
+        window.addEventListener('load', () => {
+            // Pequeño delay para suavidad
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 800);
+                
+                // Iniciar Slider
+                captionTarget.innerText = galleryData[0].text;
+                captionTarget.style.opacity = '1';
+                setInterval(runGallery, 4800);
+            }, 500);
+        });
 
-        // Intervalo de 4.8 segundos
-        setInterval(nextSlide, 4800);
+        // 4. Seguridad: Prevención de errores de red en imágenes
+        slides.forEach(s => {
+            s.onerror = function() { this.style.backgroundColor = '#1a1a1a'; };
+        });
     </script>
 
 </body>
