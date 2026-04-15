@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cabañas del Bosque | Hub</title>
-    <!-- Google Fonts: Una manuscrita para el vibe y una limpia para lectura -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@300;500;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script> <!-- FontAwesome para iconos -->
+    <title>Cabañas del Bosque | Reserva Tu Escapada</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary-bg: #121212;
-            --accent-color: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --primary-dark: #0a0a0a;
+            --accent-gold: #e2b04a; /* Un tono dorado sutil para elegancia */
+            --white: #ffffff;
+            --glass: rgba(0, 0, 0, 0.6);
         }
 
         * {
@@ -22,154 +25,228 @@
         }
 
         body {
-            background-color: var(--primary-bg);
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('TU_FOTO_DE_FONDO.jpg'); /* Aquí irá la foto de la cabaña */
+            background-color: var(--primary-dark);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Background con Overlay */
+        .hero-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
+                        url('frontalnoche.png'); /* Usamos la foto top */
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
-            font-family: 'Montserrat', sans-serif;
-            color: var(--accent-color);
+            z-index: -1;
+            transform: scale(1.1);
+            animation: slowZoom 20s infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .main-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: 40px 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-
-        .logo {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 10px;
+        /* Logo Estilo Premium */
+        .logo-wrapper {
+            width: 140px;
+            height: 140px;
+            background: white; /* El logo es negro, así que fondo blanco circular */
             border-radius: 50%;
-            border: 2px solid var(--accent-color);
-            padding: 5px;
-            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 3px solid rgba(255,255,255,0.2);
         }
 
-        .logo:hover {
-            transform: scale(1.05);
+        .logo-wrapper img {
+            width: 85%;
+            height: auto;
         }
 
         h1 {
             font-family: 'Caveat', cursive;
-            font-size: 2.8rem;
-            margin-bottom: 5px;
-            font-weight: 700;
+            font-size: 3.2rem;
+            margin-bottom: 0;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
         }
 
-        p.tagline {
-            font-size: 0.9rem;
-            letter-spacing: 2px;
+        .location {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 30px;
-            opacity: 0.8;
+            color: var(--accent-gold);
+            margin-bottom: 35px;
+            font-weight: 600;
         }
 
-        .links-container {
+        /* Botones de Redes */
+        .links-stack {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
+            margin-bottom: 40px;
         }
 
-        .link-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            padding: 18px;
-            border-radius: 15px;
+        .btn-link {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 25px;
+            border-radius: 12px;
             text-decoration: none;
             color: white;
             font-weight: 500;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .link-card:hover {
-            background: var(--accent-color);
-            color: var(--primary-bg);
+        .btn-link i {
+            font-size: 1.4rem;
+            width: 30px;
+            margin-right: 15px;
+        }
+
+        .btn-link:hover {
+            background: white;
+            color: black;
             transform: translateY(-3px);
         }
 
-        /* Colores específicos para resaltar plataformas */
-        .airbnb:hover { background-color: #FF5A5F; border-color: #FF5A5F; color: white; }
-        .whatsapp:hover { background-color: #25D366; border-color: #25D366; color: white; }
-
-        .social-footer {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            font-size: 1.5rem;
-        }
-
-        .social-footer a {
+        /* Airbnb especial */
+        .btn-airbnb:hover {
+            background: #FF5A5F;
             color: white;
+            border-color: #FF5A5F;
+        }
+
+        /* WhatsApp especial */
+        .btn-whatsapp:hover {
+            background: #25D366;
+            color: white;
+            border-color: #25D366;
+        }
+
+        /* Galería Rápida (El toque de Director Creativo) */
+        .mini-gallery-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 15px;
             opacity: 0.7;
-            transition: opacity 0.3s;
+            letter-spacing: 1px;
         }
 
-        .social-footer a:hover {
-            opacity: 1;
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
         }
 
-        /* Animación de entrada */
-        .fade-in {
-            animation: fadeIn 1.2s ease-in-out;
+        .gallery-item {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            text-align: center;
+        }
+
+        /* Animaciones de entrada */
+        .fade-up {
+            animation: fadeUp 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeUp {
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container fade-in">
-        <!-- Logo -->
-        <img src="TU_LOGO_CIRCULAR.png" alt="Cabañas del Bosque Logo" class="logo">
-        
-        <h1>Cabañas del Bosque</h1>
-        <p class="tagline">Un respiro en la montaña</p>
+    <div class="hero-bg"></div>
 
-        <div class="links-container">
-            <!-- Airbnb es el cierre de venta fuerte -->
-            <a href="LINK_AIRBNB" class="link-card airbnb">
-                <span>RESERVAR EN AIRBNB</span>
+    <main class="main-container">
+        <!-- Logo (Poné el nombre exacto de tu archivo de logo) -->
+        <div class="logo-wrapper fade-up" style="animation-delay: 0.1s;">
+            <img src="logo.png" alt="Cabañas del Bosque">
+        </div>
+
+        <h1 class="fade-up" style="animation-delay: 0.2s;">Cabañas del Bosque</h1>
+        <p class="location fade-up" style="animation-delay: 0.3s;">San José, Costa Rica</p>
+
+        <div class="links-stack">
+            <!-- Link Principal -->
+            <a href="LINK_DE_AIRBNB" class="btn-link btn-airbnb fade-up" style="animation-delay: 0.4s;" target="_blank">
+                <i class="fab fa-airbnb"></i>
+                <span>Reservar en Airbnb</span>
             </a>
 
-            <!-- WhatsApp para servicio al cliente -->
-            <a href="https://wa.me/TU_NUMERO" class="link-card whatsapp">
-                <span>CONTACTAR POR WHATSAPP</span>
+            <a href="https://wa.me/TU_NUMERO" class="btn-link btn-whatsapp fade-up" style="animation-delay: 0.5s;" target="_blank">
+                <i class="fab fa-whatsapp"></i>
+                <span>Consultas por WhatsApp</span>
             </a>
 
-            <!-- Instagram para ver el lifestyle -->
-            <a href="LINK_INSTAGRAM" class="link-card">
-                <span>SÍGUENOS EN INSTAGRAM</span>
+            <a href="LINK_INSTAGRAM" class="btn-link fade-up" style="animation-delay: 0.6s;" target="_blank">
+                <i class="fab fa-instagram"></i>
+                <span>Momentos en Instagram</span>
             </a>
 
-            <!-- Facebook -->
-            <a href="LINK_FACEBOOK" class="link-card">
-                <span>VISITA NUESTRO FACEBOOK</span>
+            <a href="LINK_FACEBOOK" class="btn-link fade-up" style="animation-delay: 0.7s;" target="_blank">
+                <i class="fab fa-facebook-f"></i>
+                <span>Comunidad Facebook</span>
             </a>
         </div>
 
-        <div class="social-footer">
-            <!-- Iconos pequeños si se desea -->
-            <p style="font-size: 0.7rem; opacity: 0.5; text-transform: uppercase;">San José, Costa Rica</p>
+        <!-- Mini Galería para antojar al cliente -->
+        <p class="mini-gallery-title fade-up" style="animation-delay: 0.8s;">Explora el lugar</p>
+        <div class="gallery-grid fade-up" style="animation-delay: 0.9s;">
+            <div class="gallery-item" style="background-image: url('interior.png');"></div>
+            <div class="gallery-item" style="background-image: url('hamaca.png');"></div>
+            <div class="gallery-item" style="background-image: url('cocina.png');"></div>
         </div>
-    </div>
+
+        <footer class="fade-up" style="animation-delay: 1s;">
+            <p>&copy; 2024 Cabañas del Bosque. Todos los derechos reservados.</p>
+        </footer>
+    </main>
 
 </body>
 </html>
