@@ -156,6 +156,11 @@ h1, h2, h3, h4, h5, h6 {
     color: #e0e0e0;
     margin-bottom: 40px;
 }
+.hero-btns {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
 
 /* About Section */
 .about {
@@ -495,6 +500,38 @@ span.flatpickr-weekday {
     border-top: 1px solid #222;
 }
 
+/* Location Section Styles */
+.location {
+    padding: 100px 0;
+    background: #171717;
+}
+.location-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+.location-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 15px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-top: 20px;
+}
+.waze-btn:hover {
+    background: #33b1ff;
+    border-color: #33b1ff;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
 /* Animations */
 .fade-up {
     opacity: 0;
@@ -510,7 +547,7 @@ span.flatpickr-weekday {
 
 /* Responsive */
 @media (max-width: 992px) {
-    .about-grid, .booking-grid {
+    .about-grid, .booking-grid, .location-grid {
         grid-template-columns: 1fr;
     }
     .hero-title {
@@ -525,4 +562,5 @@ span.flatpickr-weekday {
     .section-title { font-size: 2rem; }
     .footer-content { flex-direction: column; text-align: center; }
     .amenities-list { grid-template-columns: 1fr; }
+    .hero-btns { flex-direction: column; gap: 10px; padding: 0 40px; }
 }
