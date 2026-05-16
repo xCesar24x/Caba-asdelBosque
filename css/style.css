@@ -167,22 +167,76 @@ h1, h2, h3, h4, h5, h6 {
     gap: 60px;
     align-items: center;
 }
+/* Airbnb-style Listing Highlights */
+.listing-highlights {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.highlight-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.highlight-item:first-child {
+    border-top: 1px solid var(--border-color);
+}
+.highlight-item i {
+    color: var(--gold);
+    font-size: 1.4rem;
+    width: 30px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.highlight-item div {
+    display: flex;
+    flex-direction: column;
+}
+.highlight-item strong {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+.highlight-item span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Amenities Heading */
+.amenities-heading {
+    font-size: 1.3rem;
+    color: var(--text-light);
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+/* Amenities Grid */
 .amenities-list {
     list-style: none;
-    margin-top: 30px;
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
 }
 .amenities-list li {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
+    padding: 12px 0;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 15px;
+    border-bottom: 1px solid rgba(51, 51, 51, 0.5);
 }
 .amenities-list i {
-    color: var(--gold);
-    font-size: 1.2rem;
-    width: 25px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    width: 24px;
     text-align: center;
+    flex-shrink: 0;
 }
 .about-image img {
     width: 100%;
@@ -470,4 +524,5 @@ span.flatpickr-weekday {
     .hero-title { font-size: 2.5rem; }
     .section-title { font-size: 2rem; }
     .footer-content { flex-direction: column; text-align: center; }
+    .amenities-list { grid-template-columns: 1fr; }
 }

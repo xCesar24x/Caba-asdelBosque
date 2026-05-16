@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         // Se usa mailto para redirigir al correo (el cliente decide el destinatario final)
-        const targetEmail = "reservas@cabañasdelbosque.com"; // Se debe reemplazar por el correo real
+        const targetEmail = "Cabanasdelbosque7@gmail.com";
         window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
     });
 });
