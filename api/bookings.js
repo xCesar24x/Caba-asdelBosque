@@ -31,12 +31,11 @@ console.log("DIAGNOSTICS - Key starts with:", googlePrivateKey ? googlePrivateKe
 console.log("DIAGNOSTICS - Key ends with:", googlePrivateKey ? googlePrivateKey.substring(googlePrivateKey.length - 30) : 'none');
 
 // Inicializar Google Calendar
-const jwtClient = new google.auth.JWT(
-  googleClientEmail,
-  null,
-  googlePrivateKey,
-  ['https://www.googleapis.com/auth/calendar']
-);
+const jwtClient = new google.auth.JWT({
+  email: googleClientEmail,
+  key: googlePrivateKey,
+  scopes: ['https://www.googleapis.com/auth/calendar']
+});
 
 const calendar = google.calendar({ version: 'v3', auth: jwtClient });
 
