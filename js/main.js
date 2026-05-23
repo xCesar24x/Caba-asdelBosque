@@ -71,6 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Fetch blocked dates from backend
+    fetch('/api/bookings')
+        .then(response => response.json())
+        .then(data => {
+            if (data.blockedDates && data.blockedDates.length > 0) {
+                datePicker.set('disable', data.blockedDates);
+            }
+        })
+        .catch(error => console.error('Error fetching blocked dates:', error));
+
     // --- Form Submit Logic (Mailto / WhatsApp mapping) ---
     const bookingForm = document.getElementById('bookingForm');
     
@@ -88,30 +98,51 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Format dates
-        const formatDate = (date) => {
-            return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+        // Format dates to YYYY-MM-DD for the API
+        const formatForAPI = (date) => {
+            const d = new Date(date);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
         };
-        const checkIn = formatDate(selectedDates[0]);
-        const checkOut = formatDate(selectedDates[1]);
+        
+        const checkInAPI = formatForAPI(selectedDates[0]);
+        const checkOutAPI = formatForAPI(selectedDates[1]);
 
-        // Construir el mensaje
-        const subject = encodeURIComponent(`Nueva Solicitud de Reserva - ${name}`);
-        const body = encodeURIComponent(
-            `Hola Cabañas del Bosque,\n\n` +
-            `Me gustaría solicitar una reserva con los siguientes detalles:\n\n` +
-            `- Nombre: ${name}\n` +
-            `- WhatsApp: ${whatsapp}\n` +
-            `- Correo: ${email}\n` +
-            `- Huéspedes: ${guests}\n` +
-            `- Check-in: ${checkIn}\n` +
-            `- Check-out: ${checkOut}\n\n` +
-            `Por favor, confirmar disponibilidad y siguientes pasos.\n` +
-            `Gracias.`
-        );
+        const submitBtn = bookingForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> PROCESANDO...';
+        submitBtn.disabled = true;
 
-        // Se usa mailto para redirigir al correo (el cliente decide el destinatario final)
-        const targetEmail = "Cabanasdelbosque7@gmail.com";
-        window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+        fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name,
+                whatsapp,
+                email,
+                guests,
+                checkIn: checkInAPI,
+                checkOut: checkOutAPI
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la reserva');
+            return response.json();
+        })
+        .then(data => {
+            alert('¡Reserva solicitada exitosamente! Nos pondremos en contacto pronto.');
+            bookingForm.reset();
+            datePicker.clear();
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+            alert('Hubo un error al procesar tu reserva. Por favor intenta de nuevo.');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        });
     });
 });
