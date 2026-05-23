@@ -7,8 +7,14 @@ const cosmicReadKey = process.env.COSMIC_READ_KEY;
 const cosmicWriteKey = process.env.COSMIC_WRITE_KEY;
 
 const googleClientEmail = process.env.GOOGLE_CLIENT_EMAIL;
-// Se deben reemplazar los saltos de línea literales
-const googlePrivateKey = process.env.GOOGLE_PRIVATE_KEY ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n') : '';
+// Se deben reemplazar los saltos de línea literales y limpiar comillas extras
+let googlePrivateKey = process.env.GOOGLE_PRIVATE_KEY ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n') : '';
+if (googlePrivateKey.startsWith('"') && googlePrivateKey.endsWith('"')) {
+  googlePrivateKey = googlePrivateKey.substring(1, googlePrivateKey.length - 1);
+}
+if (googlePrivateKey.startsWith("'") && googlePrivateKey.endsWith("'")) {
+  googlePrivateKey = googlePrivateKey.substring(1, googlePrivateKey.length - 1);
+}
 const googleCalendarId = process.env.GOOGLE_CALENDAR_ID;
 
 // Inicializar Cosmic
