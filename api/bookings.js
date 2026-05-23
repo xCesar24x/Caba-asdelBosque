@@ -24,6 +24,12 @@ const cosmic = createBucketClient({
   writeKey: cosmicWriteKey,
 });
 
+console.log("DIAGNOSTICS - Email length:", googleClientEmail ? googleClientEmail.length : 0);
+console.log("DIAGNOSTICS - Email:", googleClientEmail);
+console.log("DIAGNOSTICS - Key length:", googlePrivateKey ? googlePrivateKey.length : 0);
+console.log("DIAGNOSTICS - Key starts with:", googlePrivateKey ? googlePrivateKey.substring(0, 30) : 'none');
+console.log("DIAGNOSTICS - Key ends with:", googlePrivateKey ? googlePrivateKey.substring(googlePrivateKey.length - 30) : 'none');
+
 // Inicializar Google Calendar
 const jwtClient = new google.auth.JWT(
   googleClientEmail,
