@@ -68,7 +68,9 @@ export default async function handler(req, res) {
       // 2. Obtener de Google Calendar
       if (googleClientEmail && googlePrivateKey && googleCalendarId) {
           try {
+            await jwtClient.authorize();
             const calendarRes = await calendar.events.list({
+                auth: jwtClient,
                 calendarId: googleCalendarId,
                 timeMin: (new Date()).toISOString(),
                 singleEvents: true,
@@ -161,11 +163,13 @@ export default async function handler(req, res) {
       // 2. Guardar en Google Calendar
       if (googleClientEmail && googlePrivateKey && googleCalendarId) {
           try {
+              await jwtClient.authorize();
               const endDate = new Date(checkOut + 'T00:00:00');
               endDate.setDate(endDate.getDate() + 1);
               const googleEndDateStr = endDate.toISOString().split('T')[0];
 
               await calendar.events.insert({
+                auth: jwtClient,
                 calendarId: googleCalendarId,
                 resource: {
                   summary: `Reserva: ${name}`,
