@@ -48,8 +48,8 @@ export default async function handler(req, res) {
       if (cosmicBucketSlug && cosmicReadKey) {
         try {
           const pricingRes = await cosmic.objects.find({
-            type: 'settings',
-            slug: 'pricing'
+            type: 'bookings',
+            slug: 'settings-pricing'
           }).props('metadata').limit(1);
           if (pricingRes.objects && pricingRes.objects.length > 0) {
             const meta = pricingRes.objects[0].metadata;
@@ -146,8 +146,8 @@ export default async function handler(req, res) {
         let pricingId = null;
         try {
           const pricingRes = await cosmic.objects.find({
-            type: 'settings',
-            slug: 'pricing'
+            type: 'bookings',
+            slug: 'settings-pricing'
           }).props('id').limit(1);
           if (pricingRes.objects && pricingRes.objects.length > 0) {
             pricingId = pricingRes.objects[0].id;
@@ -166,8 +166,8 @@ export default async function handler(req, res) {
         } else {
           await cosmic.objects.insertOne({
             title: 'Pricing Settings',
-            type: 'settings',
-            slug: 'pricing',
+            type: 'bookings',
+            slug: 'settings-pricing',
             metadata: {
               base_price: Number(basePrice),
               custom_prices: customPricesStr
