@@ -63,7 +63,7 @@ export default async function handler(req, res) {
       // Obtener todas las reservas de Cosmic JS
       let cosmicRes = { objects: [] };
       try {
-        cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+        cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props(['id', 'title', 'metadata', 'created_at']).limit(200);
       } catch (e) {
         if (e.message && e.message.includes('No objects found')) {
           // This is expected if the bucket is empty
@@ -120,7 +120,7 @@ export default async function handler(req, res) {
         try {
           let cosmicRes;
           try {
-            cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+            cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props(['id', 'metadata']).limit(200);
           } catch(err) {
             if (err.message && err.message.includes('No objects found')) {
               cosmicRes = { objects: [] };
@@ -148,21 +148,50 @@ export default async function handler(req, res) {
       // 1. Obtener la reserva actual de Cosmic
       let booking;
       try {
-        booking = await cosmic.objects.findOne({ id }).props('metadata');
-      } catch (err) {
-        return res.status(404).json({ error: 'No se encontró la reserva especificada' });
+        const cosmicRes = await cosmic.objects.find({ type: 'bookings', id: id }).props('metadata').limit(1);
+        if (cosmicRes.objects && cosmicRes.objects.length > 0) {
+          booking = cosmicRes.objects[0];
+        } else {
+          return res.status(404).json({ error: 'Reserva no encontrada' });
+        }
+      } catch(e) {
+        console.error('Error fetching booking by id:', e);
+        return res.status(404).json({ error: 'Error al buscar reserva: ' + e.message });
       }
 
       // --- ACCIÓN: CONFIRMAR RESERVA ---
       if (action === 'confirm') {
-        const updatedMetadata = {
-          ...booking.metadata,
-          status: 'confirmed'
-        };
+        const calendarEventId = booking.metadata && booking.metadata.calendar_event_id ? booking.metadata.calendar_event_id : null;
+        
+        // 1. Confirmar en Google Calendar
+        if (calendarEventId && googleClientEmail && googlePrivateKey && googleCalendarId) {
+           try {
+             await jwtClient.authorize();
+             await calendar.events.patch({
+               auth: jwtClient,
+               calendarId: googleCalendarId,
+               eventId: calendarEventId,
+               resource: {
+                 colorId: '2'
+               }
+             });
+           } catch(e) {
+             console.error('Error actualizando Google Calendar al confirmar:', e);
+           }
+        }
 
-        await cosmic.objects.updateOne(id, {
-          metadata: updatedMetadata
-        });
+        // 2. Actualizar estado en Cosmic JS a "confirmed"
+        try {
+          await cosmic.objects.updateOne(id, {
+            metadata: {
+              ...booking.metadata,
+              status: 'confirmed'
+            }
+          });
+        } catch(e) {
+          console.error('Error actualizando Cosmic JS al confirmar:', e);
+          return res.status(500).json({ error: 'Error al actualizar base de datos: ' + e.message });
+        }
 
         return res.status(200).json({ message: 'Reserva confirmada exitosamente' });
       }
