@@ -427,16 +427,9 @@ span.flatpickr-weekday {
 }
 .flatpickr-day {
     color: var(--text-muted) !important;
-    border-radius: 8px !important;
+    border-radius: 4px !important;
     font-size: 1rem !important;
     border: 1px solid transparent !important;
-    display: inline-flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 48px !important;
-    line-height: 1.1 !important;
-    padding-top: 4px !important;
 }
 .flatpickr-day:hover, .flatpickr-day:focus {
     background: rgba(255,255,255,0.1) !important;

@@ -94,16 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         locale: "es", // Spanish locale
         showMonths: 1,
         disableMobile: true, // Forces custom UI on mobile
-        onDayCreate: function(dObj, dStr, fp, dayElem) {
-            const dateStr = formatForAPI(dayElem.dateObj);
-            const price = getPriceForDate(dateStr);
-            const priceStr = formatPriceShort(price);
-            
-            const priceEl = document.createElement("span");
-            priceEl.className = "flatpickr-day-price";
-            priceEl.innerText = priceStr;
-            dayElem.appendChild(priceEl);
-        },
         onChange: function(selectedDates, dateStr, instance) {
             const previewEl = document.getElementById('pricePreview');
             if (selectedDates.length === 2) {
