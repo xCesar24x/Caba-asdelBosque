@@ -977,7 +977,7 @@
     <script>
         let allBookings = [];
         let activeFilter = 'all';
-        let bookingIdToDelete = null;
+        let bookingToDelete = null;
 
         // Cargar las reservas de inmediato al iniciar
         document.addEventListener('DOMContentLoaded', () => {
@@ -1103,7 +1103,7 @@
                     </div>
                     <div class="action-buttons">
                         ${confirmBtnHtml}
-                        <button class="action-btn btn-reject" onclick="openConfirmModal('${b.id}')" title="Rechazar y Eliminar Reserva"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="action-btn btn-reject" onclick="openConfirmModal('${b.id}', '${encodeURIComponent(b.name)}', '${b.checkIn}', '${b.checkOut}', '${b.guests}', '${b.whatsapp}')" title="Rechazar y Eliminar Reserva"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 `;
 
@@ -1187,18 +1187,26 @@
         }
 
         // --- DIÁLOGO DE ELIMINACIÓN ---
-        function openConfirmModal(id) {
-            bookingIdToDelete = id;
+        function openConfirmModal(id, encodedName, checkIn, checkOut, guests, whatsapp) {
+            bookingToDelete = {
+                id: id,
+                name: decodeURIComponent(encodedName),
+                checkIn: checkIn,
+                checkOut: checkOut,
+                guests: guests,
+                whatsapp: whatsapp
+            };
             document.getElementById('confirmModal').classList.add('active');
         }
 
         function closeConfirmModal() {
             document.getElementById('confirmModal').classList.remove('active');
-            bookingIdToDelete = null;
+            bookingToDelete = null;
         }
 
         function executeDelete() {
-            if (!bookingIdToDelete) return;
+            if (!bookingToDelete) return;
+            const { id, name, checkIn, checkOut, guests, whatsapp } = bookingToDelete;
 
             const confirmBtn = document.getElementById('btnModalConfirm');
             confirmBtn.disabled = true;
@@ -1211,7 +1219,7 @@
                 },
                 body: JSON.stringify({
                     action: 'delete',
-                    id: bookingIdToDelete
+                    id: id
                 })
             })
             .then(res => {
@@ -1222,24 +1230,38 @@
                 showToast('Reserva eliminada y fechas liberadas en Google Calendar', 'success');
                 
                 // Animación de salida antes de remover
-                const itemEl = document.getElementById(`booking-${bookingIdToDelete}`);
+                const itemEl = document.getElementById(`booking-${id}`);
                 if (itemEl) {
                     itemEl.style.transition = 'all 0.4s ease';
                     itemEl.style.opacity = '0';
                     itemEl.style.transform = 'translateX(-30px)';
                     
                     setTimeout(() => {
-                        allBookings = allBookings.filter(b => b.id !== bookingIdToDelete);
+                        allBookings = allBookings.filter(b => b.id !== id);
                         updateStats(allBookings);
                         renderBookings();
                         closeConfirmModal();
                     }, 400);
                 } else {
-                    allBookings = allBookings.filter(b => b.id !== bookingIdToDelete);
+                    allBookings = allBookings.filter(b => b.id !== id);
                     updateStats(allBookings);
                     renderBookings();
                     closeConfirmModal();
                 }
+
+                // Generar mensaje de rechazo/cancelación para WhatsApp
+                const formatVisual = (dateStr) => {
+                    const d = new Date(dateStr + 'T00:00:00');
+                    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                };
+
+                const msg = `¡Hola *${name}*! Te saluda Bryan de *Cabañas del Bosque* 🌲\n\nTe escribimos para informarte que lamentablemente *no pudimos procesar tu solicitud de reserva* para las fechas del ${formatVisual(checkIn)} al ${formatVisual(checkOut)}.\n\nCualquier duda o si deseas consultar por otras fechas disponibles, quedamos a tu completa disposición por este medio. ¡Muchas gracias por tu comprensión!`;
+
+                const cleanWhatsapp = whatsapp.replace(/\+/g, '').replace(/\s/g, '').replace(/-/g, '');
+                const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(msg)}`;
+
+                // Abrir en otra pestaña
+                window.open(whatsappUrl, '_blank');
             })
             .catch(err => {
                 console.error(err);
