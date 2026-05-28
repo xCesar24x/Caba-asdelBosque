@@ -1012,11 +1012,18 @@
             display: block;
             color: var(--gold);
         }
-        .pricing-card .flatpickr-day.selected .flatpickr-day-price,
-        .pricing-card .flatpickr-day.startRange .flatpickr-day-price,
-        .pricing-card .flatpickr-day.endRange .flatpickr-day-price {
+        .pricing-card .flatpickr-day.selected,
+        .pricing-card .flatpickr-day.startRange,
+        .pricing-card .flatpickr-day.endRange {
+            background: var(--gold) !important;
+            border-color: var(--gold) !important;
             color: var(--bg-dark) !important;
-            font-weight: 700 !important;
+            box-shadow: 0 0 15px rgba(196, 165, 117, 0.4) !important;
+        }
+        .pricing-card .flatpickr-day.inRange {
+            background: rgba(196, 165, 117, 0.15) !important;
+            border-color: transparent !important;
+            color: var(--text-light) !important;
         }
         .pricing-card .flatpickr-day.disabled {
             background: rgba(231, 29, 54, 0.15) !important;
@@ -1051,9 +1058,10 @@
         </header>
 
         <!-- PESTAÑAS DE NAVEGACIÓN PRINCIPAL -->
-        <div class="main-navigation" style="display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+        <div class="main-navigation" style="display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap;">
             <button class="tab-btn active" id="navReservas" onclick="switchSection('reservas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</button>
-            <button class="tab-btn" id="navTarifas" onclick="switchSection('tarifas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-tags"></i> Tarifas y Bloqueos</button>
+            <button class="tab-btn" id="navTarifas" onclick="switchSection('tarifas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-tags"></i> Calendario de Tarifas</button>
+            <button class="tab-btn" id="navBloqueos" onclick="switchSection('bloqueos')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-ban"></i> Bloqueo de Fechas</button>
         </div>
 
         <!-- SECCIÓN DE RESERVAS -->
@@ -1118,14 +1126,14 @@
             </main>
         </div>
 
-        <!-- SECCIÓN DE TARIFAS Y BLOQUEOS -->
+        <!-- SECCIÓN DE TARIFAS -->
         <div id="sectionTarifas" style="display: none;">
             <div class="pricing-container">
                 <!-- Left Column: Calendar Editor -->
                 <div class="pricing-card">
                     <h3><i class="fa-regular fa-calendar-days"></i> Calendario de Tarifas</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-                        Selecciona un día o un rango de fechas para fijar un precio personalizado o bloquear las fechas manualmente.
+                        Toca un día en el calendario para cargar su precio actual y editarlo de forma rápida e individual.
                     </p>
                     <div class="calendar-wrapper">
                         <input type="text" id="adminPricePicker" class="hidden-input">
@@ -1134,7 +1142,7 @@
 
                 <!-- Right Column: Controls -->
                 <div class="pricing-card">
-                    <h3><i class="fa-solid fa-sliders"></i> Panel de Control</h3>
+                    <h3><i class="fa-solid fa-sliders"></i> Configuración de Tarifas</h3>
                     
                     <!-- Global base price -->
                     <div class="pricing-form-group">
@@ -1147,10 +1155,15 @@
                     </div>
 
                     <!-- Custom Night price setter -->
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px;">
-                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-tag"></i> Tarifa Especial</h4>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 25px;">
+                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-tag"></i> Tarifa Especial del Día</h4>
+                        
+                        <div id="selectedDateDisplay" style="font-size: 0.95rem; font-weight: 600; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; background: rgba(196,165,117,0.1); padding: 10px 15px; border-radius: 6px;">
+                            <i class="fa-regular fa-calendar"></i> Selecciona un día en el calendario
+                        </div>
+
                         <div class="pricing-form-group">
-                            <label>Precio para Fechas Seleccionadas</label>
+                            <label>Precio para la Fecha Seleccionada</label>
                             <input type="number" id="customPriceInput" class="pricing-input" placeholder="Ej. 200000">
                         </div>
                         <div class="pricing-btn-group">
@@ -1158,15 +1171,38 @@
                             <button class="btn-danger-outline" onclick="resetToGlobalBase()"><i class="fa-solid fa-arrow-rotate-left"></i> Restablecer a Base</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Block dates setter -->
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px;">
-                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-ban"></i> Bloqueo de Fechas (Airbnb / Otro)</h4>
-                        <div class="pricing-form-group">
-                            <label>Motivo o Nota del Bloqueo</label>
-                            <input type="text" id="blockReasonInput" class="pricing-input" placeholder="Ej. Airbnb / Mantenimiento">
+        <!-- SECCIÓN DE BLOQUEOS -->
+        <div id="sectionBloqueos" style="display: none;">
+            <div class="pricing-container">
+                <!-- Left Column: Calendar Range Editor -->
+                <div class="pricing-card">
+                    <h3><i class="fa-solid fa-ban"></i> Calendario de Bloqueos</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                        Selecciona el rango de fechas en el calendario (check-in y check-out) que deseas bloquear del sistema.
+                    </p>
+                    <div class="calendar-wrapper">
+                        <input type="text" id="adminBlockPicker" class="hidden-input">
+                    </div>
+                </div>
+
+                <!-- Right Column: Control Panel -->
+                <div class="pricing-card">
+                    <h3><i class="fa-solid fa-lock"></i> Panel de Bloqueo</h3>
+                    <div class="pricing-form-group">
+                        <label>Motivo o Nota del Bloqueo</label>
+                        <input type="text" id="blockReasonInput" class="pricing-input" placeholder="Ej. Airbnb / Mantenimiento">
+                    </div>
+                    <button class="btn-gold" style="width: 100%; margin-top: 10px; background: var(--pending); color: #fff;" onclick="applyManualBlock()"><i class="fa-solid fa-lock"></i> Bloquear Fechas Seleccionadas</button>
+                    
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 30px;">
+                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-list-check"></i> Bloqueos Activos</h4>
+                        <div id="activeBlocksList" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                            <!-- Inyectado vía Javascript -->
                         </div>
-                        <button class="btn-gold" style="width: 100%; margin-top: 10px; background: var(--pending); color: #fff;" onclick="applyManualBlock()"><i class="fa-solid fa-lock"></i> Bloquear Fechas Seleccionadas</button>
                     </div>
                 </div>
             </div>
@@ -1201,6 +1237,7 @@
             document.querySelectorAll('.main-navigation .tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('sectionReservas').style.display = 'none';
             document.getElementById('sectionTarifas').style.display = 'none';
+            document.getElementById('sectionBloqueos').style.display = 'none';
             
             if (section === 'reservas') {
                 document.getElementById('navReservas').classList.add('active');
@@ -1209,10 +1246,14 @@
                 document.getElementById('navTarifas').classList.add('active');
                 document.getElementById('sectionTarifas').style.display = 'block';
                 initAdminPricePicker();
+            } else if (section === 'bloqueos') {
+                document.getElementById('navBloqueos').classList.add('active');
+                document.getElementById('sectionBloqueos').style.display = 'block';
+                initAdminBlockPicker();
             }
         }
 
-        // --- PRICING & LOCKS CALENDAR MANAGEMENT ---
+        // --- PRICING CALENDAR MANAGEMENT ---
         let adminPricePicker = null;
         let adminPricingData = { basePrice: 25000, customPrices: {} };
         let adminBlockedDates = [];
@@ -1222,7 +1263,7 @@
             
             adminPricePicker = flatpickr("#adminPricePicker", {
                 inline: true,
-                mode: "range",
+                mode: "single",
                 minDate: "today",
                 locale: "es",
                 showMonths: 1,
@@ -1239,10 +1280,48 @@
                     priceEl.className = "flatpickr-day-price";
                     priceEl.innerText = priceStr;
                     dayElem.appendChild(priceEl);
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        const selectedDate = selectedDates[0];
+                        const dateStrAPI = formatForAPI(selectedDate);
+                        
+                        // Formatear visualmente en español
+                        const dateVisual = selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                        document.getElementById('selectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar-check"></i> ${dateVisual}`;
+                        
+                        // Cargar el precio actual en el input
+                        const price = adminPricingData.customPrices && adminPricingData.customPrices[dateStrAPI] 
+                            ? Number(adminPricingData.customPrices[dateStrAPI]) 
+                            : adminPricingData.basePrice;
+                            
+                        document.getElementById('customPriceInput').value = price;
+                    } else {
+                        document.getElementById('selectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar"></i> Selecciona un día en el calendario`;
+                        document.getElementById('customPriceInput').value = '';
+                    }
                 }
             });
             
             loadAdminPricing();
+        }
+
+        // --- DEDICATED BLOCKING CALENDAR ---
+        let adminBlockPicker = null;
+
+        function initAdminBlockPicker() {
+            if (adminBlockPicker) return;
+            
+            adminBlockPicker = flatpickr("#adminBlockPicker", {
+                inline: true,
+                mode: "range",
+                minDate: "today",
+                locale: "es",
+                showMonths: 1
+            });
+            
+            loadAdminPricing();
+            renderActiveBlocks();
         }
 
         const formatForAPI = (date) => {
@@ -1281,6 +1360,9 @@
                         adminBlockedDates = data.blockedDates;
                         if (adminPricePicker) {
                             adminPricePicker.set('disable', data.blockedDates);
+                        }
+                        if (adminBlockPicker) {
+                            adminBlockPicker.set('disable', data.blockedDates);
                         }
                     }
                 })
@@ -1321,23 +1403,16 @@
             const priceVal = document.getElementById('customPriceInput').value;
             
             if (selectedDates.length === 0) {
-                showToast('Selecciona fechas en el calendario primero', 'error');
+                showToast('Selecciona un día en el calendario primero', 'error');
                 return;
             }
             if (!priceVal) {
-                showToast('Introduce el precio para las fechas seleccionadas', 'error');
+                showToast('Introduce el precio para la fecha seleccionada', 'error');
                 return;
             }
 
-            let start = new Date(selectedDates[0]);
-            let end = selectedDates[selectedDates.length - 1];
-            
-            let current = new Date(start);
-            while (current <= end) {
-                const currentStr = formatForAPI(current);
-                adminPricingData.customPrices[currentStr] = Number(priceVal);
-                current.setDate(current.getDate() + 1);
-            }
+            const currentStr = formatForAPI(selectedDates[0]);
+            adminPricingData.customPrices[currentStr] = Number(priceVal);
 
             saveCustomPricesToServer();
         }
@@ -1345,27 +1420,20 @@
         function resetToGlobalBase() {
             const selectedDates = adminPricePicker.selectedDates;
             if (selectedDates.length === 0) {
-                showToast('Selecciona fechas en el calendario primero', 'error');
+                showToast('Selecciona un día en el calendario primero', 'error');
                 return;
             }
 
-            let start = new Date(selectedDates[0]);
-            let end = selectedDates[selectedDates.length - 1];
-            
-            let current = new Date(start);
-            while (current <= end) {
-                const currentStr = formatForAPI(current);
-                if (adminPricingData.customPrices && adminPricingData.customPrices[currentStr]) {
-                    delete adminPricingData.customPrices[currentStr];
-                }
-                current.setDate(current.getDate() + 1);
+            const currentStr = formatForAPI(selectedDates[0]);
+            if (adminPricingData.customPrices && adminPricingData.customPrices[currentStr]) {
+                delete adminPricingData.customPrices[currentStr];
             }
 
             saveCustomPricesToServer();
         }
 
         function saveCustomPricesToServer() {
-            showToast('Guardando tarifas...', 'success');
+            showToast('Guardando tarifa...', 'success');
             fetch('/api/admin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1380,18 +1448,89 @@
                 return res.json();
             })
             .then(data => {
-                showToast('¡Tarifas guardadas exitosamente!', 'success');
+                showToast('¡Tarifa actualizada exitosamente!', 'success');
                 if (adminPricePicker) {
                     adminPricePicker.clear();
                     adminPricePicker.redraw();
                 }
                 document.getElementById('customPriceInput').value = '';
+                document.getElementById('selectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar"></i> Selecciona un día en el calendario`;
+            })
+            .catch(err => showToast(err.message, 'error'));
+        }
+
+        // --- ACTIVE MANUAL BLOCKS RENDERER ---
+        function renderActiveBlocks() {
+            const listEl = document.getElementById('activeBlocksList');
+            if (!listEl) return;
+            
+            listEl.innerHTML = '';
+            
+            const blocks = allBookings.filter(b => b.name.toUpperCase().startsWith('BLOQUEO'));
+            
+            if (blocks.length === 0) {
+                listEl.innerHTML = `<div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0;">No hay bloqueos activos.</div>`;
+                return;
+            }
+            
+            blocks.forEach(b => {
+                const checkInDate = new Date(b.checkIn + 'T00:00:00');
+                const checkOutDate = new Date(b.checkOut + 'T00:00:00');
+                const optionsVisual = { day: 'numeric', month: 'short' };
+                const checkInVisual = checkInDate.toLocaleDateString('es-ES', optionsVisual);
+                const checkOutVisual = checkOutDate.toLocaleDateString('es-ES', optionsVisual);
+                
+                const item = document.createElement('div');
+                item.style = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 15px;';
+                item.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-weight: 600; color: #fff; font-size: 0.9rem;">${b.name}</span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">${checkInVisual} al ${checkOutVisual}</span>
+                    </div>
+                    <button class="action-btn btn-reject" onclick="deleteBlockDirectly('${b.id}')" style="width: 32px; height: 32px;" title="Eliminar Bloqueo"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function deleteBlockDirectly(id) {
+            showToast('Eliminando bloqueo...', 'success');
+            fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'delete',
+                    id: id
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al eliminar bloqueo');
+                return res.json();
+            })
+            .then(data => {
+                showToast('Bloqueo eliminado correctamente', 'success');
+                allBookings = allBookings.filter(b => b.id !== id);
+                updateStats(allBookings);
+                renderBookings();
+                renderActiveBlocks();
+                
+                // Recargar fechas bloqueadas en calendarios
+                fetch('/api/bookings')
+                    .then(res => res.json())
+                    .then(data => {
+                        adminBlockedDates = data.blockedDates || [];
+                        if (adminPricePicker) adminPricePicker.set('disable', adminBlockedDates);
+                        if (adminBlockPicker) adminBlockPicker.set('disable', adminBlockedDates);
+                        if (adminPricePicker) adminPricePicker.redraw();
+                        if (adminBlockPicker) adminBlockPicker.redraw();
+                    });
             })
             .catch(err => showToast(err.message, 'error'));
         }
 
         function applyManualBlock() {
-            const selectedDates = adminPricePicker.selectedDates;
+            if (!adminBlockPicker) return;
+            const selectedDates = adminBlockPicker.selectedDates;
             const reason = document.getElementById('blockReasonInput').value || 'Airbnb';
             
             if (selectedDates.length < 2) {
@@ -1402,7 +1541,7 @@
             const checkIn = formatForAPI(selectedDates[0]);
             const checkOut = formatForAPI(selectedDates[1]);
 
-            showToast('Bloqueando fechas...', 'success');
+            showToast('Creando bloqueo...', 'success');
             fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1422,12 +1561,24 @@
             })
             .then(data => {
                 showToast('¡Fechas bloqueadas con éxito!', 'success');
-                if (adminPricePicker) {
-                    adminPricePicker.clear();
+                if (adminBlockPicker) {
+                    adminBlockPicker.clear();
                 }
                 document.getElementById('blockReasonInput').value = '';
-                loadAdminPricing();
-                fetchBookings();
+                
+                fetchBookings().then(() => {
+                    renderActiveBlocks();
+                });
+                
+                fetch('/api/bookings')
+                    .then(res => res.json())
+                    .then(data => {
+                        adminBlockedDates = data.blockedDates || [];
+                        if (adminPricePicker) adminPricePicker.set('disable', adminBlockedDates);
+                        if (adminBlockPicker) adminBlockPicker.set('disable', adminBlockedDates);
+                        if (adminPricePicker) adminPricePicker.redraw();
+                        if (adminBlockPicker) adminBlockPicker.redraw();
+                    });
             })
             .catch(err => showToast(err.message, 'error'));
         }
@@ -1447,7 +1598,7 @@
             emptyEl.style.display = 'none';
             listEl.style.display = 'none';
 
-            fetch('/api/admin', {
+            return fetch('/api/admin', {
                 method: 'GET'
             })
             .then(res => {
@@ -1458,6 +1609,7 @@
                 allBookings = data.bookings || [];
                 updateStats(allBookings);
                 renderBookings();
+                renderActiveBlocks();
             })
             .catch(err => {
                 console.error(err);
