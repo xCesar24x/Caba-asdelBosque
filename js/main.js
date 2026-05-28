@@ -132,9 +132,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(data => {
-            alert('¡Reserva solicitada exitosamente! Nos pondremos en contacto pronto.');
+            // Build prefilled WhatsApp message
+            const messageText = `¡Hola! Me gustaría confirmar mi solicitud de reserva en Cabañas del Bosque:\n\n` +
+                                `• *Nombre:* ${name}\n` +
+                                `• *WhatsApp/Tel:* ${whatsapp}\n` +
+                                `• *Correo:* ${email}\n` +
+                                `• *Huéspedes:* ${guests}\n` +
+                                `• *Fecha de Entrada:* ${checkInAPI}\n` +
+                                `• *Fecha de Salida:* ${checkOutAPI}\n\n` +
+                                `¡Muchas gracias!`;
+            const encodedText = encodeURIComponent(messageText);
+            const whatsappUrl = `https://wa.me/50688225220?text=${encodedText}`;
+
+            alert('¡Reserva solicitada exitosamente en el sistema! Te estamos redirigiendo a WhatsApp para enviar los detalles de tu confirmación de inmediato.');
+            
             bookingForm.reset();
             datePicker.clear();
+
+            // Open WhatsApp to send confirmation
+            window.open(whatsappUrl, '_blank');
         })
         .catch(error => {
             console.error('Error submitting form:', error);

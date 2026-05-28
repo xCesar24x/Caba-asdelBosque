@@ -564,3 +564,37 @@ span.flatpickr-weekday {
     .amenities-list { grid-template-columns: 1fr; }
     .hero-btns { flex-direction: column; gap: 10px; padding: 0 40px; }
 }
+
+/* Floating WhatsApp Button */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+.whatsapp-float:hover {
+    background-color: #20ba5a;
+    color: #fff;
+    transform: scale(1.1) translateY(-5px);
+}
+@media (max-width: 768px) {
+    .whatsapp-float {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+}
