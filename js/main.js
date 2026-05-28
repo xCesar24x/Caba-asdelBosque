@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             datePicker.clear();
 
             // Open WhatsApp to send confirmation
-            window.open(whatsappUrl, '_blank');
+            window.location.href = whatsappUrl;
         })
         .catch(error => {
             console.error('Error submitting form:', error);
