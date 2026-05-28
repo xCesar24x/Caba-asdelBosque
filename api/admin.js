@@ -50,26 +50,26 @@ export default async function handler(req, res) {
       }
 
       // Obtener todas las reservas de Cosmic JS
-      const cosmicRes = await cosmic.objects.find({ type: 'bookings' })
-        .props('id,title,metadata,created_at')
-        .limit(200);
+      const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
 
       const bookings = cosmicRes.objects || [];
 
-      // Mapear y ordenar por fecha de check-in (las más próximas primero)
-      const mappedBookings = bookings.map(b => ({
-        id: b.id,
-        title: b.title,
-        name: b.metadata.name || 'Huésped Anónimo',
-        whatsapp: b.metadata.whatsapp || '',
-        email: b.metadata.email || '',
-        guests: b.metadata.guests || 2,
-        checkIn: b.metadata.check_in || '',
-        checkOut: b.metadata.check_out || '',
-        status: b.metadata.status || 'pending',
-        calendarEventId: b.metadata.calendar_event_id || null,
-        createdAt: b.created_at
-      })).sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
+      // Mapear de forma ultra-segura filtrando objetos sin metadatos y ordenar por fecha de check-in (las más próximas primero)
+      const mappedBookings = bookings
+        .filter(b => b.metadata && b.metadata.check_in && b.metadata.check_out)
+        .map(b => ({
+          id: b.id,
+          title: b.title,
+          name: b.metadata.name || 'Huésped Anónimo',
+          whatsapp: b.metadata.whatsapp || '',
+          email: b.metadata.email || '',
+          guests: b.metadata.guests || 2,
+          checkIn: b.metadata.check_in,
+          checkOut: b.metadata.check_out,
+          status: b.metadata.status || 'pending',
+          calendarEventId: b.metadata.calendar_event_id || null,
+          createdAt: b.created_at
+        })).sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
 
       return res.status(200).json({ bookings: mappedBookings });
 
