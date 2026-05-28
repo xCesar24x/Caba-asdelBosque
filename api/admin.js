@@ -42,6 +42,17 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  if (req.query && req.query.testenv === 'true') {
+    return res.status(200).json({
+      hasBucketSlug: !!cosmicBucketSlug,
+      hasReadKey: !!cosmicReadKey,
+      hasWriteKey: !!cosmicWriteKey,
+      hasGoogleEmail: !!googleClientEmail,
+      hasGoogleKey: !!googlePrivateKey,
+      hasGoogleCalendarId: !!googleCalendarId
+    });
+  }
+
   // --- LISTAR RESERVAS ---
   if (req.method === 'GET') {
     try {
