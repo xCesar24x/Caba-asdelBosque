@@ -1418,8 +1418,15 @@
                     customPrices: adminPricingData.customPrices
                 })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Error al actualizar precio base');
+            .then(async res => {
+                if (!res.ok) {
+                    let errMsg = 'Error al actualizar precio base';
+                    try {
+                        const errData = await res.json();
+                        if (errData && errData.error) errMsg = errData.error;
+                    } catch (e) {}
+                    throw new Error(errMsg);
+                }
                 return res.json();
             })
             .then(data => {
@@ -1475,8 +1482,15 @@
                     customPrices: adminPricingData.customPrices
                 })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Error al guardar tarifas');
+            .then(async res => {
+                if (!res.ok) {
+                    let errMsg = 'Error al guardar tarifas';
+                    try {
+                        const errData = await res.json();
+                        if (errData && errData.error) errMsg = errData.error;
+                    } catch (e) {}
+                    throw new Error(errMsg);
+                }
                 return res.json();
             })
             .then(data => {
