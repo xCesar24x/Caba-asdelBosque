@@ -1385,20 +1385,6 @@
                     showToast('Error al cargar tarifas', 'error');
                 });
 
-            fetch('/api/bookings')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.blockedDates && data.blockedDates.length > 0) {
-                        adminBlockedDates = data.blockedDates;
-                        if (adminPricePicker) {
-                            adminPricePicker.set('disable', data.blockedDates);
-                        }
-                        if (adminBlockPicker) {
-                            adminBlockPicker.set('disable', data.blockedDates);
-                        }
-                    }
-                })
-                .catch(err => console.error("Error loading bookings for admin calendar:", err));
         }
 
         function updateBasePrice() {
@@ -1560,16 +1546,8 @@
                 renderBookings();
                 renderActiveBlocks();
                 
-                // Recargar fechas bloqueadas en calendarios
-                fetch('/api/bookings')
-                    .then(res => res.json())
-                    .then(data => {
-                        adminBlockedDates = data.blockedDates || [];
-                        if (adminPricePicker) adminPricePicker.set('disable', adminBlockedDates);
-                        if (adminBlockPicker) adminBlockPicker.set('disable', adminBlockedDates);
-                        if (adminPricePicker) adminPricePicker.redraw();
-                        if (adminBlockPicker) adminBlockPicker.redraw();
-                    });
+                if (adminPricePicker) adminPricePicker.redraw();
+                if (adminBlockPicker) adminBlockPicker.redraw();
             })
             .catch(err => showToast(err.message, 'error'));
         }
@@ -1616,15 +1594,8 @@
                     renderActiveBlocks();
                 });
                 
-                fetch('/api/bookings')
-                    .then(res => res.json())
-                    .then(data => {
-                        adminBlockedDates = data.blockedDates || [];
-                        if (adminPricePicker) adminPricePicker.set('disable', adminBlockedDates);
-                        if (adminBlockPicker) adminBlockPicker.set('disable', adminBlockedDates);
-                        if (adminPricePicker) adminPricePicker.redraw();
-                        if (adminBlockPicker) adminBlockPicker.redraw();
-                    });
+                if (adminPricePicker) adminPricePicker.redraw();
+                if (adminBlockPicker) adminBlockPicker.redraw();
             })
             .catch(err => showToast(err.message, 'error'));
         }
