@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       }
 
       // Obtener todas las reservas de Cosmic JS
-      const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
+      const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('id,title,metadata,created_at').limit(200);
 
       const bookings = cosmicRes.objects || [];
 
@@ -132,6 +132,22 @@ export default async function handler(req, res) {
         await cosmic.objects.deleteOne(id);
 
         return res.status(200).json({ message: 'Reserva eliminada y fechas liberadas exitosamente' });
+      }
+
+      // --- ACCIÓN: ELIMINAR TODAS LAS RESERVAS ---
+      if (action === 'delete_all') {
+        const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
+        const bookingsToDelete = cosmicRes.objects || [];
+        let count = 0;
+        for (const b of bookingsToDelete) {
+          try {
+            await cosmic.objects.deleteOne(b.id);
+            count++;
+          } catch (err) {
+            console.error('Error deleting booking:', err);
+          }
+        }
+        return res.status(200).json({ message: `Se eliminaron ${count} reservas de la base de datos` });
       }
 
       return res.status(400).json({ error: 'Acción inválida. Use "confirm" o "delete"' });
