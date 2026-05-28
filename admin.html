@@ -11,6 +11,11 @@
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Flatpickr for Pricing/Block Calendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    
     <!-- Custom embedded styling for modularity & encapsulation -->
     <style>
         :root {
@@ -873,6 +878,155 @@
                 text-align: center;
             }
         }
+
+        /* --- Estilos del Gestor de Tarifas --- */
+        .pricing-container {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        @media (max-width: 768px) {
+            .pricing-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: var(--glass-blur);
+        }
+        .pricing-card h3 {
+            font-family: var(--font-heading);
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pricing-form-group {
+            margin-bottom: 20px;
+        }
+        .pricing-form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .pricing-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .pricing-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(196, 165, 117, 0.08);
+            box-shadow: 0 0 10px rgba(196, 165, 117, 0.2);
+        }
+        .pricing-btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 20px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-body);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold:hover {
+            background: var(--gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(196, 165, 117, 0.3);
+        }
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-body);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger-outline:hover {
+            background: rgba(231, 29, 54, 0.1);
+        }
+        .pricing-card .calendar-wrapper {
+            margin-top: 20px;
+        }
+        
+        /* Flatpickr Customization inside Admin */
+        .pricing-card .flatpickr-calendar {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 100% !important;
+        }
+        .pricing-card .flatpickr-day {
+            color: var(--text-muted) !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+            display: inline-flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            height: 48px !important;
+            line-height: 1.1 !important;
+            padding-top: 4px !important;
+        }
+        .pricing-card .flatpickr-day-price {
+            font-size: 0.65rem !important;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-top: 1px;
+            display: block;
+            color: var(--gold);
+        }
+        .pricing-card .flatpickr-day.selected .flatpickr-day-price,
+        .pricing-card .flatpickr-day.startRange .flatpickr-day-price,
+        .pricing-card .flatpickr-day.endRange .flatpickr-day-price {
+            color: var(--bg-dark) !important;
+            font-weight: 700 !important;
+        }
+        .pricing-card .flatpickr-day.disabled {
+            background: rgba(231, 29, 54, 0.15) !important;
+            color: var(--danger) !important;
+            opacity: 0.8 !important;
+        }
+        .pricing-card .flatpickr-day.disabled .flatpickr-day-price {
+            color: var(--danger) !important;
+            text-decoration: line-through;
+        }
     </style>
 </head>
 <body>
@@ -896,64 +1050,127 @@
             </div>
         </header>
 
-        <!-- INDICADORES CLAVE (STATS) -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon total">
-                    <i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Total Reservas</h3>
-                    <p id="statTotal">0</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon pending">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Pendientes</h3>
-                    <p id="statPending">0</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon confirmed">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>Confirmadas</h3>
-                    <p id="statConfirmed">0</p>
-                </div>
-            </div>
-        </section>
+        <!-- PESTAÑAS DE NAVEGACIÓN PRINCIPAL -->
+        <div class="main-navigation" style="display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+            <button class="tab-btn active" id="navReservas" onclick="switchSection('reservas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</button>
+            <button class="tab-btn" id="navTarifas" onclick="switchSection('tarifas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-tags"></i> Tarifas y Bloqueos</button>
+        </div>
 
-        <!-- FILTROS Y BUSCADOR -->
-        <section class="filters-container">
-            <h2 class="agenda-title"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</h2>
-            <div class="tabs">
-                <button class="tab-btn active" id="tabAll" onclick="setFilter('all')">Todas</button>
-                <button class="tab-btn" id="tabPending" onclick="setFilter('pending')">Pendientes</button>
-                <button class="tab-btn" id="tabConfirmed" onclick="setFilter('confirmed')">Confirmadas</button>
-            </div>
-        </section>
+        <!-- SECCIÓN DE RESERVAS -->
+        <div id="sectionReservas">
+            <!-- INDICADORES CLAVE (STATS) -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Reservas</h3>
+                        <p id="statTotal">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Pendientes</h3>
+                        <p id="statPending">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon confirmed">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Confirmadas</h3>
+                        <p id="statConfirmed">0</p>
+                    </div>
+                </div>
+            </section>
 
-        <!-- LISTADO DE RESERVAS -->
-        <main>
-            <div id="loadingState" class="loading-container" style="display: none;">
-                <div class="spinner"></div>
-                <p>Cargando información en tiempo real...</p>
-            </div>
+            <!-- FILTROS Y BUSCADOR -->
+            <section class="filters-container">
+                <h2 class="agenda-title"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</h2>
+                <div class="tabs">
+                    <button class="tab-btn active" id="tabAll" onclick="setFilter('all')">Todas</button>
+                    <button class="tab-btn" id="tabPending" onclick="setFilter('pending')">Pendientes</button>
+                    <button class="tab-btn" id="tabConfirmed" onclick="setFilter('confirmed')">Confirmadas</button>
+                </div>
+            </section>
 
-            <div id="emptyState" class="empty-state" style="display: none;">
-                <i class="fa-solid fa-tree"></i>
-                <h3>No hay reservas registradas</h3>
-                <p>No se encontraron reservas en esta sección en este momento.</p>
-            </div>
+            <!-- LISTADO DE RESERVAS -->
+            <main>
+                <div id="loadingState" class="loading-container" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Cargando información en tiempo real...</p>
+                </div>
 
-            <div id="bookingsList" class="agenda-list">
-                <!-- Se inyectará vía Javascript -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fa-solid fa-tree"></i>
+                    <h3>No hay reservas registradas</h3>
+                    <p>No se encontraron reservas en esta sección en este momento.</p>
+                </div>
+
+                <div id="bookingsList" class="agenda-list">
+                    <!-- Se inyectará vía Javascript -->
+                </div>
+            </main>
+        </div>
+
+        <!-- SECCIÓN DE TARIFAS Y BLOQUEOS -->
+        <div id="sectionTarifas" style="display: none;">
+            <div class="pricing-container">
+                <!-- Left Column: Calendar Editor -->
+                <div class="pricing-card">
+                    <h3><i class="fa-regular fa-calendar-days"></i> Calendario de Tarifas</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                        Selecciona un día o un rango de fechas para fijar un precio personalizado o bloquear las fechas manualmente.
+                    </p>
+                    <div class="calendar-wrapper">
+                        <input type="text" id="adminPricePicker" class="hidden-input">
+                    </div>
+                </div>
+
+                <!-- Right Column: Controls -->
+                <div class="pricing-card">
+                    <h3><i class="fa-solid fa-sliders"></i> Panel de Control</h3>
+                    
+                    <!-- Global base price -->
+                    <div class="pricing-form-group">
+                        <label>Precio Base Global (por noche)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="basePriceInput" class="pricing-input" value="19000" placeholder="Ej. 19000">
+                            <button class="btn-gold" onclick="updateBasePrice()"><i class="fa-solid fa-check"></i> Actualizar</button>
+                        </div>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; display: block;">Se aplica a todos los días que no tengan una tarifa personalizada fija.</span>
+                    </div>
+
+                    <!-- Custom Night price setter -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px;">
+                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-tag"></i> Tarifa Especial</h4>
+                        <div class="pricing-form-group">
+                            <label>Precio para Fechas Seleccionadas</label>
+                            <input type="number" id="customPriceInput" class="pricing-input" placeholder="Ej. 200000">
+                        </div>
+                        <div class="pricing-btn-group">
+                            <button class="btn-gold" onclick="applyCustomPrice()"><i class="fa-solid fa-floppy-disk"></i> Fijar Tarifa</button>
+                            <button class="btn-danger-outline" onclick="resetToGlobalBase()"><i class="fa-solid fa-arrow-rotate-left"></i> Restablecer a Base</button>
+                        </div>
+                    </div>
+
+                    <!-- Block dates setter -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px;">
+                        <h4 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-solid fa-ban"></i> Bloqueo de Fechas (Airbnb / Otro)</h4>
+                        <div class="pricing-form-group">
+                            <label>Motivo o Nota del Bloqueo</label>
+                            <input type="text" id="blockReasonInput" class="pricing-input" placeholder="Ej. Airbnb / Mantenimiento">
+                        </div>
+                        <button class="btn-gold" style="width: 100%; margin-top: 10px; background: var(--pending); color: #fff;" onclick="applyManualBlock()"><i class="fa-solid fa-lock"></i> Bloquear Fechas Seleccionadas</button>
+                    </div>
+                </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <!-- MODAL DE DIÁLOGO DE RECHAZO (WARNING MODAL) -->
@@ -978,6 +1195,242 @@
         let allBookings = [];
         let activeFilter = 'all';
         let bookingToDelete = null;
+
+        // --- SECTION SWITCHER ---
+        function switchSection(section) {
+            document.querySelectorAll('.main-navigation .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('sectionReservas').style.display = 'none';
+            document.getElementById('sectionTarifas').style.display = 'none';
+            
+            if (section === 'reservas') {
+                document.getElementById('navReservas').classList.add('active');
+                document.getElementById('sectionReservas').style.display = 'block';
+            } else if (section === 'tarifas') {
+                document.getElementById('navTarifas').classList.add('active');
+                document.getElementById('sectionTarifas').style.display = 'block';
+                initAdminPricePicker();
+            }
+        }
+
+        // --- PRICING & LOCKS CALENDAR MANAGEMENT ---
+        let adminPricePicker = null;
+        let adminPricingData = { basePrice: 19000, customPrices: {} };
+        let adminBlockedDates = [];
+
+        function initAdminPricePicker() {
+            if (adminPricePicker) return; // Only initialize once
+            
+            adminPricePicker = flatpickr("#adminPricePicker", {
+                inline: true,
+                mode: "range",
+                minDate: "today",
+                locale: "es",
+                showMonths: 1,
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = formatForAPI(dayElem.dateObj);
+                    
+                    const price = adminPricingData.customPrices && adminPricingData.customPrices[dateStr] 
+                        ? Number(adminPricingData.customPrices[dateStr]) 
+                        : adminPricingData.basePrice;
+                    
+                    const priceStr = formatPriceShort(price);
+                    
+                    const priceEl = document.createElement("span");
+                    priceEl.className = "flatpickr-day-price";
+                    priceEl.innerText = priceStr;
+                    dayElem.appendChild(priceEl);
+                }
+            });
+            
+            loadAdminPricing();
+        }
+
+        const formatForAPI = (date) => {
+            const d = new Date(date);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        };
+
+        const formatPriceShort = (price) => {
+            if (price >= 1000) {
+                return `₡${Math.round(price / 1000)} k`;
+            }
+            return `₡${price}`;
+        };
+
+        function loadAdminPricing() {
+            fetch('/api/admin?type=pricing')
+                .then(res => {
+                    if (!res.ok) throw new Error('Error al cargar precios');
+                    return res.json();
+                })
+                .then(data => {
+                    adminPricingData = data;
+                    document.getElementById('basePriceInput').value = data.basePrice || 19000;
+                    if (adminPricePicker) adminPricePicker.redraw();
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Error al cargar tarifas', 'error');
+                });
+
+            fetch('/api/bookings')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.blockedDates && data.blockedDates.length > 0) {
+                        adminBlockedDates = data.blockedDates;
+                        if (adminPricePicker) {
+                            adminPricePicker.set('disable', data.blockedDates);
+                        }
+                    }
+                })
+                .catch(err => console.error("Error loading bookings for admin calendar:", err));
+        }
+
+        function updateBasePrice() {
+            const basePrice = document.getElementById('basePriceInput').value;
+            if (!basePrice) {
+                showToast('Introduce un precio base válido', 'error');
+                return;
+            }
+            
+            showToast('Actualizando precio base...', 'success');
+            fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_pricing',
+                    basePrice: Number(basePrice),
+                    customPrices: adminPricingData.customPrices
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al actualizar precio base');
+                return res.json();
+            })
+            .then(data => {
+                showToast('¡Precio base global actualizado con éxito!', 'success');
+                adminPricingData.basePrice = Number(basePrice);
+                if (adminPricePicker) adminPricePicker.redraw();
+            })
+            .catch(err => showToast(err.message, 'error'));
+        }
+
+        function applyCustomPrice() {
+            const selectedDates = adminPricePicker.selectedDates;
+            const priceVal = document.getElementById('customPriceInput').value;
+            
+            if (selectedDates.length === 0) {
+                showToast('Selecciona fechas en el calendario primero', 'error');
+                return;
+            }
+            if (!priceVal) {
+                showToast('Introduce el precio para las fechas seleccionadas', 'error');
+                return;
+            }
+
+            let start = new Date(selectedDates[0]);
+            let end = selectedDates[selectedDates.length - 1];
+            
+            let current = new Date(start);
+            while (current <= end) {
+                const currentStr = formatForAPI(current);
+                adminPricingData.customPrices[currentStr] = Number(priceVal);
+                current.setDate(current.getDate() + 1);
+            }
+
+            saveCustomPricesToServer();
+        }
+
+        function resetToGlobalBase() {
+            const selectedDates = adminPricePicker.selectedDates;
+            if (selectedDates.length === 0) {
+                showToast('Selecciona fechas en el calendario primero', 'error');
+                return;
+            }
+
+            let start = new Date(selectedDates[0]);
+            let end = selectedDates[selectedDates.length - 1];
+            
+            let current = new Date(start);
+            while (current <= end) {
+                const currentStr = formatForAPI(current);
+                if (adminPricingData.customPrices && adminPricingData.customPrices[currentStr]) {
+                    delete adminPricingData.customPrices[currentStr];
+                }
+                current.setDate(current.getDate() + 1);
+            }
+
+            saveCustomPricesToServer();
+        }
+
+        function saveCustomPricesToServer() {
+            showToast('Guardando tarifas...', 'success');
+            fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_pricing',
+                    basePrice: adminPricingData.basePrice,
+                    customPrices: adminPricingData.customPrices
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al guardar tarifas');
+                return res.json();
+            })
+            .then(data => {
+                showToast('¡Tarifas guardadas exitosamente!', 'success');
+                if (adminPricePicker) {
+                    adminPricePicker.clear();
+                    adminPricePicker.redraw();
+                }
+                document.getElementById('customPriceInput').value = '';
+            })
+            .catch(err => showToast(err.message, 'error'));
+        }
+
+        function applyManualBlock() {
+            const selectedDates = adminPricePicker.selectedDates;
+            const reason = document.getElementById('blockReasonInput').value || 'Airbnb';
+            
+            if (selectedDates.length < 2) {
+                showToast('Selecciona un rango de fechas (entrada y salida) en el calendario', 'error');
+                return;
+            }
+
+            const checkIn = formatForAPI(selectedDates[0]);
+            const checkOut = formatForAPI(selectedDates[1]);
+
+            showToast('Bloqueando fechas...', 'success');
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: `BLOQUEO: ${reason}`,
+                    whatsapp: '+506 8822 5220',
+                    email: 'admin@cabanasdelbosque.com',
+                    guests: 1,
+                    checkIn: checkIn,
+                    checkOut: checkOut,
+                    status: 'confirmed'
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al bloquear fechas');
+                return res.json();
+            })
+            .then(data => {
+                showToast('¡Fechas bloqueadas con éxito!', 'success');
+                if (adminPricePicker) {
+                    adminPricePicker.clear();
+                }
+                document.getElementById('blockReasonInput').value = '';
+                loadAdminPricing();
+                fetchBookings();
+            })
+            .catch(err => showToast(err.message, 'error'));
+        }
 
         // Cargar las reservas de inmediato al iniciar
         document.addEventListener('DOMContentLoaded', () => {

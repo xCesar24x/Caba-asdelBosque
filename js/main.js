@@ -57,6 +57,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Initialize Pricing Variables and Helpers ---
+    let pricingData = { basePrice: 19000, customPrices: {} };
+
+    // Format dates to YYYY-MM-DD for the API
+    const formatForAPI = (date) => {
+        const d = new Date(date);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().split('T')[0];
+    };
+
+    const getPriceForDate = (dateStr) => {
+        if (pricingData.customPrices && pricingData.customPrices[dateStr]) {
+            return Number(pricingData.customPrices[dateStr]);
+        }
+        return pricingData.basePrice;
+    };
+
+    const formatPriceShort = (price) => {
+        if (price >= 1000) {
+            return `₡${Math.round(price / 1000)} k`;
+        }
+        return `₡${price}`;
+    };
+
+    const formatCurrency = (val) => {
+        return `₡${Number(val).toLocaleString('es-CR')}`;
+    };
+
     // --- Initialize Flatpickr (Calendar) ---
     // Using inline mode to match the visual reference of the booking card
     const datePicker = flatpickr("#datePicker", {
@@ -66,20 +94,75 @@ document.addEventListener('DOMContentLoaded', () => {
         locale: "es", // Spanish locale
         showMonths: 1,
         disableMobile: true, // Forces custom UI on mobile
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const dateStr = formatForAPI(dayElem.dateObj);
+            const price = getPriceForDate(dateStr);
+            const priceStr = formatPriceShort(price);
+            
+            const priceEl = document.createElement("span");
+            priceEl.className = "flatpickr-day-price";
+            priceEl.innerText = priceStr;
+            dayElem.appendChild(priceEl);
+        },
         onChange: function(selectedDates, dateStr, instance) {
-            // Can be used to validate if check-in and check-out are selected
+            const previewEl = document.getElementById('pricePreview');
+            if (selectedDates.length === 2) {
+                const start = selectedDates[0];
+                const end = selectedDates[1];
+                
+                let total = 0;
+                let nightsCount = 0;
+                let current = new Date(start);
+                
+                let explanationHtml = '';
+                
+                while (current < end) {
+                    const currentStr = formatForAPI(current);
+                    const price = getPriceForDate(currentStr);
+                    total += price;
+                    nightsCount++;
+                    
+                    explanationHtml += `
+                        <div class="price-preview-row">
+                            <span>Noche ${nightsCount} (${current.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}):</span>
+                            <span>${formatCurrency(price)}</span>
+                        </div>
+                    `;
+                    
+                    current.setDate(current.getDate() + 1);
+                }
+                
+                previewEl.innerHTML = `
+                    <div class="price-preview-title">
+                        <i class="fa-solid fa-calculator"></i> Cotización Estimada
+                    </div>
+                    ${explanationHtml}
+                    <div class="price-preview-total">
+                        <span>Total (${nightsCount} ${nightsCount === 1 ? 'Noche' : 'Noches'}):</span>
+                        <span>${formatCurrency(total)}</span>
+                    </div>
+                `;
+                previewEl.style.display = 'block';
+            } else {
+                previewEl.style.display = 'none';
+                previewEl.innerHTML = '';
+            }
         }
     });
 
-    // Fetch blocked dates from backend
+    // Fetch blocked dates and pricing from backend
     fetch('/api/bookings')
         .then(response => response.json())
         .then(data => {
+            if (data.pricing) {
+                pricingData = data.pricing;
+            }
             if (data.blockedDates && data.blockedDates.length > 0) {
                 datePicker.set('disable', data.blockedDates);
             }
+            datePicker.redraw();
         })
-        .catch(error => console.error('Error fetching blocked dates:', error));
+        .catch(error => console.error('Error fetching bookings data:', error));
 
     // --- Form Submit Logic (Mailto / WhatsApp mapping) ---
     const bookingForm = document.getElementById('bookingForm');

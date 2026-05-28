@@ -47,6 +47,7 @@ export default async function handler(req, res) {
     try {
       let bookings = [];
       let events = [];
+      let pricing = { basePrice: 19000, customPrices: {} };
 
       // 1. Obtener de Cosmic JS
       if (cosmicBucketSlug && cosmicReadKey) {
@@ -55,6 +56,26 @@ export default async function handler(req, res) {
             bookings = cosmicRes.objects || [];
         } catch (err) {
             console.error("Cosmic read error:", err);
+        }
+
+        try {
+            const pricingRes = await cosmic.objects.find({
+                type: 'settings',
+                slug: 'pricing'
+            }).props('metadata').limit(1);
+            if (pricingRes.objects && pricingRes.objects.length > 0) {
+                const meta = pricingRes.objects[0].metadata;
+                pricing.basePrice = Number(meta.base_price) || 19000;
+                if (meta.custom_prices) {
+                    try {
+                        pricing.customPrices = typeof meta.custom_prices === 'string' ? JSON.parse(meta.custom_prices) : meta.custom_prices;
+                    } catch (e) {
+                        pricing.customPrices = meta.custom_prices;
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Cosmic pricing read error:", err);
         }
       }
 
@@ -116,7 +137,10 @@ export default async function handler(req, res) {
       });
 
       const uniqueBlockedDates = [...new Set(blockedDates)];
-      return res.status(200).json({ blockedDates: uniqueBlockedDates });
+      return res.status(200).json({ 
+        blockedDates: uniqueBlockedDates,
+        pricing: pricing
+      });
 
     } catch (error) {
       console.error('Error global fetching bookings:', error);
@@ -126,7 +150,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      const { name, whatsapp, email, guests, checkIn, checkOut } = req.body;
+      const { name, whatsapp, email, guests, checkIn, checkOut, status } = req.body;
 
       if (!name || !whatsapp || !email || !checkIn || !checkOut) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' });
@@ -146,7 +170,7 @@ export default async function handler(req, res) {
                 auth: jwtClient,
                 calendarId: googleCalendarId,
                 resource: {
-                  summary: `Reserva: ${name}`,
+                  summary: name.toUpperCase().startsWith('BLOQUEO') ? name : `Reserva: ${name}`,
                   description: `Huéspedes: ${guests}\nWhatsApp: ${whatsapp}\nEmail: ${email}`,
                   start: { date: checkIn },
                   end: { date: googleEndDateStr },
@@ -164,7 +188,7 @@ export default async function handler(req, res) {
       if (cosmicBucketSlug && cosmicWriteKey) {
         try {
             await cosmic.objects.insertOne({
-                title: `Reserva - ${name}`,
+                title: name.toUpperCase().startsWith('BLOQUEO') ? name : `Reserva - ${name}`,
                 type: 'bookings',
                 metadata: {
                     name,
@@ -174,7 +198,7 @@ export default async function handler(req, res) {
                     check_in: checkIn,
                     check_out: checkOut,
                     calendar_event_id: calendarEventId,
-                    status: 'pending'
+                    status: status || 'pending'
                 }
             });
         } catch(err) {

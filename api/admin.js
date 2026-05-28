@@ -42,15 +42,35 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method === 'GET' && req.query && req.query.env === '1') {
-    return res.status(200).json({
-      hasBucketSlug: !!cosmicBucketSlug,
-      hasReadKey: !!cosmicReadKey,
-      hasWriteKey: !!cosmicWriteKey,
-      hasGoogleEmail: !!googleClientEmail,
-      hasGoogleKey: !!googlePrivateKey,
-      hasGoogleCalendarId: !!googleCalendarId
-    });
+  if (req.method === 'GET' && req.query && req.query.type === 'pricing') {
+    try {
+      let pricing = { basePrice: 19000, customPrices: {} };
+      if (cosmicBucketSlug && cosmicReadKey) {
+        try {
+          const pricingRes = await cosmic.objects.find({
+            type: 'settings',
+            slug: 'pricing'
+          }).props('metadata').limit(1);
+          if (pricingRes.objects && pricingRes.objects.length > 0) {
+            const meta = pricingRes.objects[0].metadata;
+            pricing.basePrice = Number(meta.base_price) || 19000;
+            if (meta.custom_prices) {
+              try {
+                pricing.customPrices = typeof meta.custom_prices === 'string' ? JSON.parse(meta.custom_prices) : meta.custom_prices;
+              } catch (e) {
+                pricing.customPrices = meta.custom_prices;
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Cosmic pricing read error:", err);
+        }
+      }
+      return res.status(200).json(pricing);
+    } catch (error) {
+      console.error('Error in Admin GET pricing:', error);
+      return res.status(500).json({ error: 'Error al obtener configuración de precios' });
+    }
   }
 
   // --- LISTAR RESERVAS ---
@@ -110,8 +130,52 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Falta el parámetro requerido: action' });
       }
       
-      if (action !== 'delete_all' && !id) {
+      if (action !== 'delete_all' && action !== 'update_pricing' && !id) {
         return res.status(400).json({ error: 'Falta el parámetro requerido: id' });
+      }
+
+      // --- ACCIÓN: ACTUALIZAR PRECIOS ---
+      if (action === 'update_pricing') {
+        const { basePrice, customPrices } = req.body;
+        if (!basePrice) {
+          return res.status(400).json({ error: 'Falta el precio base' });
+        }
+        
+        const customPricesStr = typeof customPrices === 'object' ? JSON.stringify(customPrices) : (customPrices || '{}');
+
+        let pricingId = null;
+        try {
+          const pricingRes = await cosmic.objects.find({
+            type: 'settings',
+            slug: 'pricing'
+          }).props('id').limit(1);
+          if (pricingRes.objects && pricingRes.objects.length > 0) {
+            pricingId = pricingRes.objects[0].id;
+          }
+        } catch(e) {
+          console.log("No existing pricing object, will insert a new one.");
+        }
+
+        if (pricingId) {
+          await cosmic.objects.updateOne(pricingId, {
+            metadata: {
+              base_price: Number(basePrice),
+              custom_prices: customPricesStr
+            }
+          });
+        } else {
+          await cosmic.objects.insertOne({
+            title: 'Pricing Settings',
+            type: 'settings',
+            slug: 'pricing',
+            metadata: {
+              base_price: Number(basePrice),
+              custom_prices: customPricesStr
+            }
+          });
+        }
+
+        return res.status(200).json({ message: 'Precios actualizados exitosamente' });
       }
 
       // --- ACCIÓN: ELIMINAR TODAS LAS RESERVAS ---

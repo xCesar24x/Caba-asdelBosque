@@ -427,9 +427,16 @@ span.flatpickr-weekday {
 }
 .flatpickr-day {
     color: var(--text-muted) !important;
-    border-radius: 4px !important;
+    border-radius: 8px !important;
     font-size: 1rem !important;
     border: 1px solid transparent !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 48px !important;
+    line-height: 1.1 !important;
+    padding-top: 4px !important;
 }
 .flatpickr-day:hover, .flatpickr-day:focus {
     background: rgba(255,255,255,0.1) !important;
@@ -446,6 +453,62 @@ span.flatpickr-weekday {
     border-color: transparent !important;
     box-shadow: -5px 0 0 rgba(196, 165, 117, 0.15), 5px 0 0 rgba(196, 165, 117, 0.15) !important;
     color: var(--text-light) !important;
+}
+.flatpickr-day-price {
+    font-size: 0.65rem !important;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-top: 1px;
+    display: block;
+}
+.flatpickr-day.selected .flatpickr-day-price,
+.flatpickr-day.startRange .flatpickr-day-price,
+.flatpickr-day.endRange .flatpickr-day-price {
+    color: var(--bg-dark) !important;
+    font-weight: 700 !important;
+    opacity: 1;
+}
+.flatpickr-day.disabled .flatpickr-day-price {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+/* Premium Cost Preview Card */
+.price-preview-card {
+    margin-top: 25px;
+    background: rgba(196, 165, 117, 0.08);
+    border: 1px dashed var(--gold);
+    border-radius: 6px;
+    padding: 15px 20px;
+    animation: fadeIn 0.4s ease;
+}
+.price-preview-title {
+    font-size: 0.8rem;
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.price-preview-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 5px;
+}
+.price-preview-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 700;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 8px;
+    margin-top: 8px;
 }
 .booking-note {
     font-size: 0.75rem;
