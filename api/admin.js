@@ -50,7 +50,13 @@ export default async function handler(req, res) {
       }
 
       // Obtener todas las reservas de Cosmic JS
-      const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('id,title,metadata,created_at').limit(200);
+      let cosmicRes;
+      try {
+        cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+      } catch (e) {
+        console.error('Error fetching bookings in GET:', e);
+        return res.status(500).json({ error: 'Error from Cosmic JS: ' + e.message });
+      }
 
       const bookings = cosmicRes.objects || [];
 
@@ -94,18 +100,23 @@ export default async function handler(req, res) {
 
       // --- ACCIÓN: ELIMINAR TODAS LAS RESERVAS ---
       if (action === 'delete_all') {
-        const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
-        const bookingsToDelete = cosmicRes.objects || [];
         let count = 0;
-        for (const b of bookingsToDelete) {
-          try {
-            await cosmic.objects.deleteOne(b.id);
-            count++;
-          } catch (err) {
-            console.error('Error deleting booking:', err);
+        try {
+          const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+          const bookingsToDelete = cosmicRes.objects || [];
+          for (const b of bookingsToDelete) {
+            try {
+              await cosmic.objects.deleteOne(b.id);
+              count++;
+            } catch (err) {
+              console.error('Error deleting booking:', err);
+            }
           }
+          return res.status(200).json({ message: `Se eliminaron ${count} reservas de la base de datos` });
+        } catch(e) {
+          console.error('Error fetching bookings for delete_all:', e);
+          return res.status(500).json({ error: 'Error fetching bookings for delete_all: ' + e.message });
         }
-        return res.status(200).json({ message: `Se eliminaron ${count} reservas de la base de datos` });
       }
 
       // 1. Obtener la reserva actual de Cosmic
