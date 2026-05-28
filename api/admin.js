@@ -84,8 +84,28 @@ export default async function handler(req, res) {
     try {
       const { action, id } = req.body;
 
-      if (!id || !action) {
-        return res.status(400).json({ error: 'Faltan parámetros requeridos: id o action' });
+      if (!action) {
+        return res.status(400).json({ error: 'Falta el parámetro requerido: action' });
+      }
+      
+      if (action !== 'delete_all' && !id) {
+        return res.status(400).json({ error: 'Falta el parámetro requerido: id' });
+      }
+
+      // --- ACCIÓN: ELIMINAR TODAS LAS RESERVAS ---
+      if (action === 'delete_all') {
+        const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
+        const bookingsToDelete = cosmicRes.objects || [];
+        let count = 0;
+        for (const b of bookingsToDelete) {
+          try {
+            await cosmic.objects.deleteOne(b.id);
+            count++;
+          } catch (err) {
+            console.error('Error deleting booking:', err);
+          }
+        }
+        return res.status(200).json({ message: `Se eliminaron ${count} reservas de la base de datos` });
       }
 
       // 1. Obtener la reserva actual de Cosmic
@@ -134,23 +154,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ message: 'Reserva eliminada y fechas liberadas exitosamente' });
       }
 
-      // --- ACCIÓN: ELIMINAR TODAS LAS RESERVAS ---
-      if (action === 'delete_all') {
-        const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).limit(200);
-        const bookingsToDelete = cosmicRes.objects || [];
-        let count = 0;
-        for (const b of bookingsToDelete) {
-          try {
-            await cosmic.objects.deleteOne(b.id);
-            count++;
-          } catch (err) {
-            console.error('Error deleting booking:', err);
-          }
-        }
-        return res.status(200).json({ message: `Se eliminaron ${count} reservas de la base de datos` });
-      }
-
-      return res.status(400).json({ error: 'Acción inválida. Use "confirm" o "delete"' });
+      return res.status(400).json({ error: 'Acción inválida. Use "confirm", "delete" o "delete_all"' });
 
     } catch (error) {
       console.error('Error in Admin POST action:', error);
