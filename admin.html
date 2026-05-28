@@ -1015,8 +1015,13 @@
 
             errorEl.style.display = 'none';
 
-            // Intentar verificar haciendo una consulta simple al GET
-            fetch(`/api/admin?password=${encodeURIComponent(pinInput)}`)
+            // Intentar verificar haciendo una consulta simple con el header seguro
+            fetch('/api/admin', {
+                method: 'GET',
+                headers: {
+                    'x-admin-password': pinInput
+                }
+            })
                 .then(res => {
                     if (res.ok) {
                         currentPIN = pinInput;
