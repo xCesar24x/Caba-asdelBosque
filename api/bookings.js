@@ -65,12 +65,12 @@ export default async function handler(req, res) {
             }).props('metadata').limit(1);
             if (pricingRes.objects && pricingRes.objects.length > 0) {
                 const meta = pricingRes.objects[0].metadata;
-                pricing.basePrice = Number(meta.base_price) || 25000;
-                if (meta.custom_prices) {
+                pricing.basePrice = Number(meta.status) || 25000;
+                if (meta.email) {
                     try {
-                        pricing.customPrices = typeof meta.custom_prices === 'string' ? JSON.parse(meta.custom_prices) : meta.custom_prices;
+                        pricing.customPrices = typeof meta.email === 'string' ? JSON.parse(meta.email) : meta.email;
                     } catch (e) {
-                        pricing.customPrices = meta.custom_prices;
+                        pricing.customPrices = {};
                     }
                 }
             }

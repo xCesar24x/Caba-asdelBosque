@@ -53,12 +53,12 @@ export default async function handler(req, res) {
           }).props('metadata').limit(1);
           if (pricingRes.objects && pricingRes.objects.length > 0) {
             const meta = pricingRes.objects[0].metadata;
-            pricing.basePrice = Number(meta.base_price) || 25000;
-            if (meta.custom_prices) {
+            pricing.basePrice = Number(meta.status) || 25000;
+            if (meta.email) {
               try {
-                pricing.customPrices = typeof meta.custom_prices === 'string' ? JSON.parse(meta.custom_prices) : meta.custom_prices;
+                pricing.customPrices = typeof meta.email === 'string' ? JSON.parse(meta.email) : meta.email;
               } catch (e) {
-                pricing.customPrices = meta.custom_prices;
+                pricing.customPrices = {};
               }
             }
           }
@@ -159,8 +159,13 @@ export default async function handler(req, res) {
         if (pricingId) {
           await cosmic.objects.updateOne(pricingId, {
             metadata: {
-              base_price: Number(basePrice),
-              custom_prices: customPricesStr
+              name: 'SETTINGS_PRICING',
+              email: customPricesStr,
+              status: String(basePrice),
+              whatsapp: 'N/A',
+              guests: 1,
+              check_in: '2000-01-01',
+              check_out: '2000-01-01'
             }
           });
         } else {
@@ -169,8 +174,13 @@ export default async function handler(req, res) {
             type: 'bookings',
             slug: 'settings-pricing',
             metadata: {
-              base_price: Number(basePrice),
-              custom_prices: customPricesStr
+              name: 'SETTINGS_PRICING',
+              email: customPricesStr,
+              status: String(basePrice),
+              whatsapp: 'N/A',
+              guests: 1,
+              check_in: '2000-01-01',
+              check_out: '2000-01-01'
             }
           });
         }
