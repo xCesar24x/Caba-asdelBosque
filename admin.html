@@ -1034,6 +1034,38 @@
             color: var(--danger) !important;
             text-decoration: line-through;
         }
+
+        /* Ocultar el cuadro blanco feo de anclaje */
+        .hidden-input {
+            display: none !important;
+        }
+
+        /* Estilo de legibilidad blanca para meses, años y días de la semana */
+        .pricing-card .flatpickr-months .flatpickr-month,
+        .pricing-card .flatpickr-current-month,
+        .pricing-card .flatpickr-current-month .flatpickr-monthDropdown-months,
+        .pricing-card .flatpickr-current-month input.cur-year {
+            color: #fff !important;
+            fill: #fff !important;
+        }
+        .pricing-card .flatpickr-current-month .flatpickr-monthDropdown-months option {
+            background-color: var(--bg-dark) !important;
+            color: #fff !important;
+        }
+        .pricing-card .flatpickr-months .flatpickr-prev-month,
+        .pricing-card .flatpickr-months .flatpickr-next-month {
+            color: var(--gold) !important;
+            fill: var(--gold) !important;
+        }
+        .pricing-card .flatpickr-months .flatpickr-prev-month svg,
+        .pricing-card .flatpickr-months .flatpickr-next-month svg {
+            fill: currentColor !important;
+        }
+        .pricing-card span.flatpickr-weekday {
+            color: #fff !important;
+            opacity: 0.9;
+            font-weight: 600 !important;
+        }
     </style>
 </head>
 <body>
