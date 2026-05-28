@@ -50,12 +50,17 @@ export default async function handler(req, res) {
       }
 
       // Obtener todas las reservas de Cosmic JS
-      let cosmicRes;
+      let cosmicRes = { objects: [] };
       try {
         cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
       } catch (e) {
-        console.error('Error fetching bookings in GET:', e);
-        return res.status(500).json({ error: 'Error from Cosmic JS: ' + e.message });
+        if (e.message && e.message.includes('No objects found')) {
+          // This is expected if the bucket is empty
+          cosmicRes = { objects: [] };
+        } else {
+          console.error('Error fetching bookings in GET:', e);
+          return res.status(500).json({ error: 'Error from Cosmic JS: ' + e.message });
+        }
       }
 
       const bookings = cosmicRes.objects || [];
@@ -102,7 +107,17 @@ export default async function handler(req, res) {
       if (action === 'delete_all') {
         let count = 0;
         try {
-          const cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+          let cosmicRes;
+          try {
+            cosmicRes = await cosmic.objects.find({ type: 'bookings' }).props('metadata').limit(200);
+          } catch(err) {
+            if (err.message && err.message.includes('No objects found')) {
+              cosmicRes = { objects: [] };
+            } else {
+              throw err;
+            }
+          }
+          
           const bookingsToDelete = cosmicRes.objects || [];
           for (const b of bookingsToDelete) {
             try {
