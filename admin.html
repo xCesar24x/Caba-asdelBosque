@@ -1022,7 +1022,7 @@
                     'x-admin-password': pinInput
                 }
             })
-                .then(res => {
+                .then(async res => {
                     if (res.ok) {
                         currentPIN = pinInput;
                         localStorage.setItem('admin_pin', pinInput);
@@ -1031,10 +1031,16 @@
                         showToast('¡Sesión iniciada con éxito!', 'success');
                         fetchBookings();
                     } else {
-                        throw new Error('PIN incorrecto');
+                        let errMsg = 'PIN incorrecto o error de acceso';
+                        try {
+                            const errData = await res.json();
+                            errMsg = errData.error || errMsg;
+                        } catch(e) {}
+                        throw new Error(errMsg);
                     }
                 })
                 .catch(err => {
+                    errorEl.innerText = err.message || 'Error de conexión';
                     errorEl.style.display = 'block';
                     document.getElementById('pinInput').focus();
                 });
