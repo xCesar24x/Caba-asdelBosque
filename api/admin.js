@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  if (req.method === 'PUT') {
+  if (req.method === 'GET' && req.query && req.query.env === '1') {
     return res.status(200).json({
       hasBucketSlug: !!cosmicBucketSlug,
       hasReadKey: !!cosmicReadKey,
