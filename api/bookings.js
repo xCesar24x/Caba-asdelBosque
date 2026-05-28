@@ -179,7 +179,7 @@ export default async function handler(req, res) {
             });
         } catch(err) {
             console.error("Cosmic write error:", err);
-            // Dependiendo de requerimientos, podríamos fallar o continuar
+            return res.status(500).json({ error: 'Cosmic write error: ' + err.message });
         }
       }
 
