@@ -16,12 +16,6 @@ if (googlePrivateKey.startsWith("'") && googlePrivateKey.endsWith("'")) {
 }
 const googleCalendarId = process.env.GOOGLE_CALENDAR_ID;
 
-// PIN administrativo seguro, por defecto 'Chalet26' si no está en las variables de entorno o es demasiado corta
-let adminPassword = process.env.ADMIN_PASSWORD;
-if (!adminPassword || adminPassword.trim().length < 4) {
-  adminPassword = 'Chalet26';
-}
-
 // Inicializar Cosmic
 const cosmic = createBucketClient({
   bucketSlug: cosmicBucketSlug,
@@ -42,25 +36,10 @@ export default async function handler(req, res) {
   // Configuración básica de CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
-  }
-
-  // Validar PIN de acceso (limpiando espacios al principio y final para evitar errores tipográficos)
-  const rawClientPassword = req.headers['x-admin-password'] || req.query.password;
-  const clientPassword = rawClientPassword ? String(rawClientPassword).trim() : '';
-  const expectedPassword = String(adminPassword).trim();
-
-  // Aceptar el PIN configurado, o los valores por defecto ('Chalet26', '2026', 'bosque2026')
-  const isValid = clientPassword === expectedPassword || 
-                  clientPassword === 'Chalet26' ||
-                  clientPassword === '2026' || 
-                  clientPassword === 'bosque2026';
-
-  if (!clientPassword || !isValid) {
-    return res.status(401).json({ error: 'PIN de acceso inválido o no suministrado' });
   }
 
   // --- LISTAR RESERVAS ---

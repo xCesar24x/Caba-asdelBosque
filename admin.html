@@ -879,23 +879,7 @@
     <div class="admin-bg"></div>
     <div class="admin-bg-overlay"></div>
 
-    <!-- PANTALLA DE BLOQUEO (LOCK SCREEN) -->
-    <div id="lockScreen" class="lock-screen">
-        <div class="lock-card">
-            <img src="Logo.png" alt="Cabañas del Bosque Logo" class="lock-logo" onerror="this.src='https://via.placeholder.com/150x50?text=LOGO'">
-            <h2 class="lock-title">Panel Administrativo</h2>
-            <p class="lock-subtitle">Ingresa el PIN para verificar tus credenciales</p>
-            
-            <form id="lockForm" onsubmit="handleUnlock(event)">
-                <div class="pin-wrapper">
-                    <i class="fa-solid fa-lock pin-icon"></i>
-                    <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="15" autocomplete="current-password" required>
-                </div>
-                <button type="submit" class="btn-unlock">DESBLOQUEAR <i class="fa-solid fa-unlock-keyhole"></i></button>
-            </form>
-            <p id="lockError" class="lock-error">¡PIN de acceso incorrecto!</p>
-        </div>
-    </div>
+
 
     <!-- CONTENIDO DEL DASHBOARD -->
     <div class="container">
@@ -909,7 +893,6 @@
             </div>
             <div class="header-actions">
                 <button class="btn-secundary" onclick="fetchBookings()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button>
-                <button class="btn-secundary btn-logout" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
             </div>
         </header>
 
@@ -992,68 +975,14 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <script>
-        let currentPIN = '';
         let allBookings = [];
         let activeFilter = 'all';
         let bookingIdToDelete = null;
 
-        // Comprobar si ya existe el PIN guardado en localStorage al iniciar
+        // Cargar las reservas de inmediato al iniciar
         document.addEventListener('DOMContentLoaded', () => {
-            const savedPIN = localStorage.getItem('admin_pin');
-            if (savedPIN) {
-                currentPIN = savedPIN;
-                document.getElementById('lockScreen').classList.add('hidden');
-                fetchBookings();
-            }
+            fetchBookings();
         });
-
-        // --- MANEJAR LOGIN ---
-        function handleUnlock(event) {
-            event.preventDefault();
-            const pinInput = document.getElementById('pinInput').value;
-            const errorEl = document.getElementById('lockError');
-
-            errorEl.style.display = 'none';
-
-            // Intentar verificar haciendo una consulta simple con el header seguro
-            fetch('/api/admin', {
-                method: 'GET',
-                headers: {
-                    'x-admin-password': pinInput
-                }
-            })
-                .then(async res => {
-                    if (res.ok) {
-                        currentPIN = pinInput;
-                        localStorage.setItem('admin_pin', pinInput);
-                        document.getElementById('lockScreen').classList.add('hidden');
-                        document.getElementById('pinInput').value = '';
-                        showToast('¡Sesión iniciada con éxito!', 'success');
-                        fetchBookings();
-                    } else {
-                        let errMsg = 'PIN incorrecto o error de acceso';
-                        try {
-                            const errData = await res.json();
-                            errMsg = errData.error || errMsg;
-                        } catch(e) {}
-                        throw new Error(errMsg);
-                    }
-                })
-                .catch(err => {
-                    errorEl.innerText = err.message || 'Error de conexión';
-                    errorEl.style.display = 'block';
-                    document.getElementById('pinInput').focus();
-                });
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('admin_pin');
-            currentPIN = '';
-            document.getElementById('lockScreen').classList.remove('hidden');
-            document.getElementById('bookingsList').innerHTML = '';
-            updateStats([]);
-            showToast('Sesión cerrada con éxito', 'success');
-        }
 
         // --- FETCH RESERVAS ---
         function fetchBookings() {
@@ -1066,16 +995,9 @@
             listEl.style.display = 'none';
 
             fetch('/api/admin', {
-                method: 'GET',
-                headers: {
-                    'x-admin-password': currentPIN
-                }
+                method: 'GET'
             })
             .then(res => {
-                if (res.status === 401) {
-                    handleLogout();
-                    throw new Error('Sesión inválida');
-                }
                 if (!res.ok) throw new Error('Error al obtener reservas');
                 return res.json();
             })
@@ -1163,7 +1085,7 @@
                         <div class="details-grid">
                             <div class="detail-item">
                                 <i class="fa-brands fa-whatsapp"></i>
-                                <a href="https://wa.me/${b.whatsapp.replace(/\+/g, '').replace(/\s/g, '')}" target="_blank" class="detail-link">${b.whatsapp}</a>
+                                <a href="https://wa.me/${b.whatsapp.replace(/\+/g, '').replace(/\s/g, '').replace(/-/g, '')}" target="_blank" class="detail-link">${b.whatsapp}</a>
                             </div>
                             <div class="detail-item">
                                 <i class="fa-regular fa-envelope"></i>
@@ -1218,8 +1140,7 @@
             fetch('/api/admin', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-admin-password': currentPIN
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     action: 'confirm',
@@ -1286,8 +1207,7 @@
             fetch('/api/admin', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-admin-password': currentPIN
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     action: 'delete',
