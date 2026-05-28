@@ -16,10 +16,10 @@ if (googlePrivateKey.startsWith("'") && googlePrivateKey.endsWith("'")) {
 }
 const googleCalendarId = process.env.GOOGLE_CALENDAR_ID;
 
-// PIN administrativo seguro, por defecto 'bosque2026' si no está en las variables de entorno o es demasiado corta
+// PIN administrativo seguro, por defecto 'Chalet26' si no está en las variables de entorno o es demasiado corta
 let adminPassword = process.env.ADMIN_PASSWORD;
 if (!adminPassword || adminPassword.trim().length < 4) {
-  adminPassword = 'bosque2026';
+  adminPassword = 'Chalet26';
 }
 
 // Inicializar Cosmic
@@ -53,8 +53,9 @@ export default async function handler(req, res) {
   const clientPassword = rawClientPassword ? String(rawClientPassword).trim() : '';
   const expectedPassword = String(adminPassword).trim();
 
-  // Aceptar el PIN configurado, o los valores por defecto ('2026' o 'bosque2026')
+  // Aceptar el PIN configurado, o los valores por defecto ('Chalet26', '2026', 'bosque2026')
   const isValid = clientPassword === expectedPassword || 
+                  clientPassword === 'Chalet26' ||
                   clientPassword === '2026' || 
                   clientPassword === 'bosque2026';
 
