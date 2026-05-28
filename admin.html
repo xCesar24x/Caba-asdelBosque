@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | Cabañas del Bosque</title>
+    
+    <!-- Google Fonts: Playfair Display for headings, Inter & Outfit for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom embedded styling for modularity & encapsulation -->
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --card-bg: rgba(28, 28, 28, 0.7);
+            --gold: #c4a575;
+            --gold-hover: #d1b488;
+            --gold-alpha: rgba(196, 165, 117, 0.1);
+            --text-light: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success: #2ec4b6;
+            --danger: #e71d36;
+            --pending: #ff9f1c;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Outfit', 'Inter', sans-serif;
+            --glass-blur: blur(15px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background images with dark overlays */
+        .admin-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('frontalnoche.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.2) saturate(0.8);
+            z-index: -1;
+        }
+
+        .admin-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(10, 10, 10, 0.6) 0%, #0a0a0a 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- LOCK SCREEN MODAL --- */
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: var(--glass-blur);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lock-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
+        }
+
+        .lock-card {
+            background: rgba(28, 28, 28, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .lock-logo {
+            height: 80px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+
+        .lock-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .lock-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        .pin-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 16px 20px;
+            padding-left: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(196, 165, 117, 0.08);
+            box-shadow: 0 0 15px rgba(196, 165, 117, 0.2);
+        }
+
+        .pin-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        .btn-unlock {
+            width: 100%;
+            background: var(--gold);
+            color: var(--bg-dark);
+            border: none;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn-unlock:hover {
+            background: var(--gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(196, 165, 117, 0.3);
+        }
+
+        .lock-error {
+            color: var(--danger);
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+            animation: shake 0.4s ease;
+        }
+
+        /* --- DASHBOARD CONTENT --- */
+        header.dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .header-title-wrapper h1 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            color: var(--gold);
+        }
+
+        .header-title-wrapper p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-secundary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-secundary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-muted);
+        }
+
+        .btn-logout {
+            color: var(--danger);
+        }
+
+        .btn-logout:hover {
+            background: rgba(231, 29, 54, 0.1);
+            border-color: var(--danger);
+        }
+
+        /* --- STATS COUNTERS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.pending {
+            background: rgba(255, 159, 28, 0.15);
+            color: var(--pending);
+        }
+
+        .stat-icon.confirmed {
+            background: rgba(46, 196, 182, 0.15);
+            color: var(--success);
+        }
+
+        .stat-icon.total {
+            background: rgba(196, 165, 117, 0.15);
+            color: var(--gold);
+        }
+
+        .stat-info h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-family: var(--font-body);
+        }
+
+        .stat-info p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        /* --- FILTERS TAB --- */
+        .filters-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--gold-alpha);
+            color: var(--gold);
+            box-shadow: inset 0 0 0 1px rgba(196, 165, 117, 0.2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .agenda-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .agenda-title i {
+            color: var(--gold);
+        }
+
+        /* --- RESERVATIONS AGENDA LIST --- */
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .booking-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px 30px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 30px;
+            backdrop-filter: var(--glass-blur);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .booking-item:hover {
+            border-color: rgba(196, 165, 117, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .booking-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--pending);
+            transition: all 0.3s;
+        }
+
+        .booking-item.confirmed::before {
+            background: var(--success);
+        }
+
+        /* Left side: Date Badge */
+        .date-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 18px;
+            text-align: center;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .date-badge .check-in-day {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-heading);
+            line-height: 1.1;
+        }
+
+        .date-badge .check-in-month {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .date-badge .nights-pill {
+            background: var(--gold-alpha);
+            border: 1px solid rgba(196, 165, 117, 0.2);
+            color: var(--gold);
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        /* Center side: Client Details */
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .client-name-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .client-name {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .status-chip {
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-chip.status-pending {
+            background: rgba(255, 159, 28, 0.12);
+            color: var(--pending);
+            border: 1px solid rgba(255, 159, 28, 0.2);
+        }
+
+        .status-chip.status-confirmed {
+            background: rgba(46, 196, 182, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(46, 196, 182, 0.2);
+        }
+
+        .status-chip .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+            display: inline-block;
+        }
+
+        .status-chip.status-pending .dot {
+            animation: pulse-orange 1.5s infinite;
+        }
+
+        .status-chip.status-confirmed .dot {
+            animation: pulse-green 1.5s infinite;
+        }
+
+        .details-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .detail-item i {
+            color: var(--gold);
+            font-size: 0.95rem;
+        }
+
+        .detail-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .detail-link:hover {
+            color: var(--gold);
+        }
+
+        /* Right side: Actions */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-btn.btn-confirm {
+            color: var(--success);
+            border-color: rgba(46, 196, 182, 0.2);
+        }
+
+        .action-btn.btn-confirm:hover:not(:disabled) {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+            box-shadow: 0 0 15px rgba(46, 196, 182, 0.4);
+            transform: scale(1.08);
+        }
+
+        .action-btn.btn-reject {
+            color: var(--danger);
+            border-color: rgba(231, 29, 54, 0.2);
+        }
+
+        .action-btn.btn-reject:hover:not(:disabled) {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+            box-shadow: 0 0 15px rgba(231, 29, 54, 0.4);
+            transform: scale(1.08);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* --- LOADING SPINNER --- */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 0;
+            gap: 20px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(196, 165, 117, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .empty-state i {
+            color: var(--gold);
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        /* --- DIALOG MODAL CONFIRMATION --- */
+        .confirm-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .confirm-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: rgba(28, 28, 28, 0.9);
+            border: 1px solid var(--danger);
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            transform: scale(0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-modal.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(231, 29, 54, 0.1);
+            color: var(--danger);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 0 auto 20px auto;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modal-confirm {
+            flex: 1;
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-modal-confirm:hover {
+            background: #b61327;
+            box-shadow: 0 5px 15px rgba(231, 29, 54, 0.4);
+        }
+
+        /* --- NOTIFICATION TOAST --- */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(28, 28, 28, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 24px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* Animations */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255, 159, 28, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(255, 159, 28, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 159, 28, 0); }
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(46, 196, 182, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(46, 196, 182, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 196, 182, 0); }
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 992px) {
+            .booking-item {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .booking-item::before {
+                width: 100%;
+                height: 4px;
+                top: 0; left: 0;
+            }
+
+            .date-badge {
+                width: 100%;
+                flex-direction: row;
+                gap: 15px;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .date-badge .nights-pill {
+                margin-top: 0;
+            }
+
+            .action-buttons {
+                justify-content: flex-end;
+                border-top: 1px solid var(--border-color);
+                padding-top: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header.dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filters-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .tabs {
+                width: 100%;
+            }
+            .tab-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-bg"></div>
+    <div class="admin-bg-overlay"></div>
+
+    <!-- PANTALLA DE BLOQUEO (LOCK SCREEN) -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-card">
+            <img src="Logo.png" alt="Cabañas del Bosque Logo" class="lock-logo" onerror="this.src='https://via.placeholder.com/150x50?text=LOGO'">
+            <h2 class="lock-title">Panel Administrativo</h2>
+            <p class="lock-subtitle">Ingresa el PIN para verificar tus credenciales</p>
+            
+            <form id="lockForm" onsubmit="handleUnlock(event)">
+                <div class="pin-wrapper">
+                    <i class="fa-solid fa-lock pin-icon"></i>
+                    <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="15" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn-unlock">DESBLOQUEAR <i class="fa-solid fa-unlock-keyhole"></i></button>
+            </form>
+            <p id="lockError" class="lock-error">¡PIN de acceso incorrecto!</p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO DEL DASHBOARD -->
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="logo-section">
+                <img src="Logo.png" alt="Cabañas del Bosque" class="header-logo" onerror="this.style.display='none'">
+                <div class="header-title-wrapper">
+                    <h1>Cabañas del Bosque</h1>
+                    <p>Módulo de Gestión de Reservas · Angeles Norte de San Ramón</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secundary" onclick="fetchBookings()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button>
+                <button class="btn-secundary btn-logout" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
+            </div>
+        </header>
+
+        <!-- INDICADORES CLAVE (STATS) -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Reservas</h3>
+                    <p id="statTotal">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Pendientes</h3>
+                    <p id="statPending">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon confirmed">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Confirmadas</h3>
+                    <p id="statConfirmed">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTROS Y BUSCADOR -->
+        <section class="filters-container">
+            <h2 class="agenda-title"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</h2>
+            <div class="tabs">
+                <button class="tab-btn active" id="tabAll" onclick="setFilter('all')">Todas</button>
+                <button class="tab-btn" id="tabPending" onclick="setFilter('pending')">Pendientes</button>
+                <button class="tab-btn" id="tabConfirmed" onclick="setFilter('confirmed')">Confirmadas</button>
+            </div>
+        </section>
+
+        <!-- LISTADO DE RESERVAS -->
+        <main>
+            <div id="loadingState" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+                <p>Cargando información en tiempo real...</p>
+            </div>
+
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fa-solid fa-tree"></i>
+                <h3>No hay reservas registradas</h3>
+                <p>No se encontraron reservas en esta sección en este momento.</p>
+            </div>
+
+            <div id="bookingsList" class="agenda-list">
+                <!-- Se inyectará vía Javascript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE DIÁLOGO DE RECHAZO (WARNING MODAL) -->
+    <div id="confirmModal" class="confirm-modal">
+        <div class="modal-card">
+            <div class="modal-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="modal-title">¿Rechazar y Eliminar Reserva?</h3>
+            <p class="modal-text">Esta acción es permanente. Se eliminará la reserva de Cosmic JS y se cancelará el evento en Google Calendar, liberando las fechas al instante para otros huéspedes.</p>
+            <div class="modal-btns">
+                <button class="btn-modal-cancel" onclick="closeConfirmModal()">Cancelar</button>
+                <button class="btn-modal-confirm" id="btnModalConfirm" onclick="executeDelete()">Sí, Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR DE TOASTS -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        let currentPIN = '';
+        let allBookings = [];
+        let activeFilter = 'all';
+        let bookingIdToDelete = null;
+
+        // Comprobar si ya existe el PIN guardado en localStorage al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedPIN = localStorage.getItem('admin_pin');
+            if (savedPIN) {
+                currentPIN = savedPIN;
+                document.getElementById('lockScreen').classList.add('hidden');
+                fetchBookings();
+            }
+        });
+
+        // --- MANEJAR LOGIN ---
+        function handleUnlock(event) {
+            event.preventDefault();
+            const pinInput = document.getElementById('pinInput').value;
+            const errorEl = document.getElementById('lockError');
+
+            errorEl.style.display = 'none';
+
+            // Intentar verificar haciendo una consulta simple al GET
+            fetch(`/api/admin?password=${encodeURIComponent(pinInput)}`)
+                .then(res => {
+                    if (res.ok) {
+                        currentPIN = pinInput;
+                        localStorage.setItem('admin_pin', pinInput);
+                        document.getElementById('lockScreen').classList.add('hidden');
+                        document.getElementById('pinInput').value = '';
+                        showToast('¡Sesión iniciada con éxito!', 'success');
+                        fetchBookings();
+                    } else {
+                        throw new Error('PIN incorrecto');
+                    }
+                })
+                .catch(err => {
+                    errorEl.style.display = 'block';
+                    document.getElementById('pinInput').focus();
+                });
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('admin_pin');
+            currentPIN = '';
+            document.getElementById('lockScreen').classList.remove('hidden');
+            document.getElementById('bookingsList').innerHTML = '';
+            updateStats([]);
+            showToast('Sesión cerrada con éxito', 'success');
+        }
+
+        // --- FETCH RESERVAS ---
+        function fetchBookings() {
+            const loadingEl = document.getElementById('loadingState');
+            const emptyEl = document.getElementById('emptyState');
+            const listEl = document.getElementById('bookingsList');
+
+            loadingEl.style.display = 'flex';
+            emptyEl.style.display = 'none';
+            listEl.style.display = 'none';
+
+            fetch('/api/admin', {
+                method: 'GET',
+                headers: {
+                    'x-admin-password': currentPIN
+                }
+            })
+            .then(res => {
+                if (res.status === 401) {
+                    handleLogout();
+                    throw new Error('Sesión inválida');
+                }
+                if (!res.ok) throw new Error('Error al obtener reservas');
+                return res.json();
+            })
+            .then(data => {
+                allBookings = data.bookings || [];
+                updateStats(allBookings);
+                renderBookings();
+            })
+            .catch(err => {
+                console.error(err);
+                showToast(err.message || 'Error cargando reservas', 'error');
+            })
+            .finally(() => {
+                loadingEl.style.display = 'none';
+            });
+        }
+
+        // --- RENDERIZAR RESERVAS ---
+        function renderBookings() {
+            const listEl = document.getElementById('bookingsList');
+            const emptyEl = document.getElementById('emptyState');
+            
+            listEl.innerHTML = '';
+            
+            // Filtrar reservas
+            let filtered = allBookings;
+            if (activeFilter === 'pending') {
+                filtered = allBookings.filter(b => b.status === 'pending');
+            } else if (activeFilter === 'confirmed') {
+                filtered = allBookings.filter(b => b.status === 'confirmed');
+            }
+
+            if (filtered.length === 0) {
+                emptyEl.style.display = 'block';
+                listEl.style.display = 'none';
+                return;
+            }
+
+            emptyEl.style.display = 'none';
+            listEl.style.display = 'flex';
+
+            filtered.forEach(b => {
+                const checkInDate = new Date(b.checkIn + 'T00:00:00');
+                const checkOutDate = new Date(b.checkOut + 'T00:00:00');
+                
+                // Formatear Día y Mes en español
+                const checkInDayNum = checkInDate.getDate();
+                const checkInMonthStr = checkInDate.toLocaleString('es-ES', { month: 'short' }).replace('.', '');
+                
+                // Calcular noches
+                const timeDiff = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+                const nightsCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                // Crear elemento
+                const item = document.createElement('div');
+                item.className = `booking-item ${b.status === 'confirmed' ? 'confirmed' : ''}`;
+                item.id = `booking-${b.id}`;
+
+                // Formatear las fechas visuales
+                const optionsVisual = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                const checkInVisual = checkInDate.toLocaleDateString('es-ES', optionsVisual);
+                const checkOutVisual = checkOutDate.toLocaleDateString('es-ES', optionsVisual);
+
+                // Chip de estado
+                const statusHtml = b.status === 'confirmed' 
+                    ? `<span class="status-chip status-confirmed"><span class="dot"></span>Confirmada</span>`
+                    : `<span class="status-chip status-pending"><span class="dot"></span>Pendiente</span>`;
+
+                // Botón de confirmar si está pendiente
+                const confirmBtnHtml = b.status === 'pending'
+                    ? `<button class="action-btn btn-confirm" onclick="confirmBooking('${b.id}', '${encodeURIComponent(b.name)}', '${b.checkIn}', '${b.checkOut}', '${b.guests}', '${b.whatsapp}')" title="Confirmar Reserva"><i class="fa-solid fa-check"></i></button>`
+                    : `<button class="action-btn btn-confirm" disabled><i class="fa-solid fa-check"></i></button>`;
+
+                item.innerHTML = `
+                    <div class="date-badge">
+                        <span class="check-in-month">${checkInMonthStr}</span>
+                        <span class="check-in-day">${checkInDayNum}</span>
+                        <span class="nights-pill">${nightsCount} ${nightsCount === 1 ? 'Noche' : 'Noches'}</span>
+                    </div>
+                    <div class="client-info">
+                        <div class="client-name-row">
+                            <span class="client-name">${b.name}</span>
+                            ${statusHtml}
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <i class="fa-brands fa-whatsapp"></i>
+                                <a href="https://wa.me/${b.whatsapp.replace(/\+/g, '').replace(/\s/g, '')}" target="_blank" class="detail-link">${b.whatsapp}</a>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-regular fa-envelope"></i>
+                                <a href="mailto:${b.email}" class="detail-link">${b.email}</a>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-user-group"></i>
+                                <span>${b.guests} ${b.guests === 1 ? 'Huésped' : 'Huéspedes'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span>${checkInVisual} al ${checkOutVisual}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        ${confirmBtnHtml}
+                        <button class="action-btn btn-reject" onclick="openConfirmModal('${b.id}')" title="Rechazar y Eliminar Reserva"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `;
+
+                listEl.appendChild(item);
+            });
+        }
+
+        // --- ACTUALIZAR MÁS CLAVES ---
+        function updateStats(bookings) {
+            const total = bookings.length;
+            const pending = bookings.filter(b => b.status === 'pending').length;
+            const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statPending').innerText = pending;
+            document.getElementById('statConfirmed').innerText = confirmed;
+        }
+
+        function setFilter(filter) {
+            activeFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (filter === 'all') document.getElementById('tabAll').classList.add('active');
+            if (filter === 'pending') document.getElementById('tabPending').classList.add('active');
+            if (filter === 'confirmed') document.getElementById('tabConfirmed').classList.add('active');
+            renderBookings();
+        }
+
+        // --- CONFIRMAR RESERVA (CHECK VERDE) ---
+        function confirmBooking(id, encodedName, checkIn, checkOut, guests, whatsapp) {
+            const name = decodeURIComponent(encodedName);
+            
+            showToast('Confirmando en el sistema...', 'success');
+
+            fetch('/api/admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': currentPIN
+                },
+                body: JSON.stringify({
+                    action: 'confirm',
+                    id: id
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al confirmar la reserva');
+                return res.json();
+            })
+            .then(data => {
+                showToast('¡Reserva confirmada en el sistema!', 'success');
+                
+                // Actualizar localmente el estado sin recargar todo
+                const index = allBookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    allBookings[index].status = 'confirmed';
+                    updateStats(allBookings);
+                    renderBookings();
+                }
+
+                // Generar mensaje de confirmación para WhatsApp
+                const formatVisual = (dateStr) => {
+                    const d = new Date(dateStr + 'T00:00:00');
+                    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                };
+
+                const msg = `¡Hola *${name}*! Te saluda Bryan de *Cabañas del Bosque* 🌲\n\nTe confirmo que tu solicitud de reserva ha sido *aprobada con éxito*:\n` +
+                            `• *Entrada:* ${formatVisual(checkIn)}\n` +
+                            `• *Salida:* ${formatVisual(checkOut)}\n` +
+                            `• *Huéspedes:* ${guests} ${guests == 1 ? 'persona' : 'personas'}\n\n` +
+                            `¡Te esperamos con ansias para que disfrutes de un respiro espectacular en el bosque nuboso! ⛰️✨`;
+
+                const cleanWhatsapp = whatsapp.replace(/\+/g, '').replace(/\s/g, '').replace(/-/g, '');
+                const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(msg)}`;
+
+                // Abrir en otra pestaña
+                window.open(whatsappUrl, '_blank');
+            })
+            .catch(err => {
+                console.error(err);
+                showToast(err.message, 'error');
+            });
+        }
+
+        // --- DIÁLOGO DE ELIMINACIÓN ---
+        function openConfirmModal(id) {
+            bookingIdToDelete = id;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            bookingIdToDelete = null;
+        }
+
+        function executeDelete() {
+            if (!bookingIdToDelete) return;
+
+            const confirmBtn = document.getElementById('btnModalConfirm');
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Eliminando...';
+
+            fetch('/api/admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': currentPIN
+                },
+                body: JSON.stringify({
+                    action: 'delete',
+                    id: bookingIdToDelete
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Error al eliminar la reserva');
+                return res.json();
+            })
+            .then(data => {
+                showToast('Reserva eliminada y fechas liberadas en Google Calendar', 'success');
+                
+                // Animación de salida antes de remover
+                const itemEl = document.getElementById(`booking-${bookingIdToDelete}`);
+                if (itemEl) {
+                    itemEl.style.transition = 'all 0.4s ease';
+                    itemEl.style.opacity = '0';
+                    itemEl.style.transform = 'translateX(-30px)';
+                    
+                    setTimeout(() => {
+                        allBookings = allBookings.filter(b => b.id !== bookingIdToDelete);
+                        updateStats(allBookings);
+                        renderBookings();
+                        closeConfirmModal();
+                    }, 400);
+                } else {
+                    allBookings = allBookings.filter(b => b.id !== bookingIdToDelete);
+                    updateStats(allBookings);
+                    renderBookings();
+                    closeConfirmModal();
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast(err.message, 'error');
+                closeConfirmModal();
+            })
+            .finally(() => {
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = 'Sí, Eliminar';
+            });
+        }
+
+        // --- MOSTRAR TOAST ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' 
+                ? '<i class="fa-solid fa-circle-check"></i>' 
+                : '<i class="fa-solid fa-circle-exclamation"></i>';
+
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'all 0.4s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -20px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

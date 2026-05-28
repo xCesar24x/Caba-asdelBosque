@@ -132,7 +132,35 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' });
       }
 
-      // 1. Guardar en Cosmic JS
+      let calendarEventId = null;
+
+      // 1. Guardar en Google Calendar primero para obtener el Event ID
+      if (googleClientEmail && googlePrivateKey && googleCalendarId) {
+          try {
+              await jwtClient.authorize();
+              const endDate = new Date(checkOut + 'T00:00:00');
+              endDate.setDate(endDate.getDate() + 1);
+              const googleEndDateStr = endDate.toISOString().split('T')[0];
+
+              const calendarRes = await calendar.events.insert({
+                auth: jwtClient,
+                calendarId: googleCalendarId,
+                resource: {
+                  summary: `Reserva: ${name}`,
+                  description: `Huéspedes: ${guests}\nWhatsApp: ${whatsapp}\nEmail: ${email}`,
+                  start: { date: checkIn },
+                  end: { date: googleEndDateStr },
+                }
+              });
+              if (calendarRes && calendarRes.data && calendarRes.data.id) {
+                calendarEventId = calendarRes.data.id;
+              }
+          } catch(err) {
+            console.error("Calendar write error:", err);
+          }
+      }
+
+      // 2. Guardar en Cosmic JS incluyendo el status y calendar_event_id
       if (cosmicBucketSlug && cosmicWriteKey) {
         try {
             await cosmic.objects.insertOne({
@@ -144,36 +172,15 @@ export default async function handler(req, res) {
                     email,
                     guests: Number(guests),
                     check_in: checkIn,
-                    check_out: checkOut
+                    check_out: checkOut,
+                    calendar_event_id: calendarEventId,
+                    status: 'pending'
                 }
             });
         } catch(err) {
             console.error("Cosmic write error:", err);
             // Dependiendo de requerimientos, podríamos fallar o continuar
         }
-      }
-
-      // 2. Guardar en Google Calendar
-      if (googleClientEmail && googlePrivateKey && googleCalendarId) {
-          try {
-              await jwtClient.authorize();
-              const endDate = new Date(checkOut + 'T00:00:00');
-              endDate.setDate(endDate.getDate() + 1);
-              const googleEndDateStr = endDate.toISOString().split('T')[0];
-
-              await calendar.events.insert({
-                auth: jwtClient,
-                calendarId: googleCalendarId,
-                resource: {
-                  summary: `Reserva: ${name}`,
-                  description: `Huéspedes: ${guests}\nWhatsApp: ${whatsapp}\nEmail: ${email}`,
-                  start: { date: checkIn },
-                  end: { date: googleEndDateStr },
-                }
-              });
-          } catch(err) {
-            console.error("Calendar write error:", err);
-          }
       }
 
       return res.status(200).json({ message: 'Reserva procesada exitosamente' });
