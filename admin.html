@@ -1066,6 +1066,30 @@
             opacity: 0.9;
             font-weight: 600 !important;
         }
+
+        /* Estilos específicos para el Calendario General */
+        .pricing-card .flatpickr-day.is-reservation {
+            background: rgba(46, 196, 182, 0.25) !important;
+            border: 1px solid rgba(46, 196, 182, 0.6) !important;
+            color: #2ec4b6 !important;
+            font-weight: bold !important;
+        }
+        .pricing-card .flatpickr-day.is-blocking {
+            background: rgba(231, 29, 54, 0.25) !important;
+            border: 1px solid rgba(231, 29, 54, 0.6) !important;
+            color: #ff5e62 !important;
+            font-weight: bold !important;
+        }
+        .pricing-card .flatpickr-day.is-reservation.selected {
+            background: #2ec4b6 !important;
+            color: var(--bg-dark) !important;
+            border-color: #2ec4b6 !important;
+        }
+        .pricing-card .flatpickr-day.is-blocking.selected {
+            background: #ff5e62 !important;
+            color: var(--bg-dark) !important;
+            border-color: #ff5e62 !important;
+        }
     </style>
 </head>
 <body>
@@ -1094,6 +1118,7 @@
             <button class="tab-btn active" id="navReservas" onclick="switchSection('reservas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-regular fa-calendar-check"></i> Agenda de Reservas</button>
             <button class="tab-btn" id="navTarifas" onclick="switchSection('tarifas')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-tags"></i> Calendario de Tarifas</button>
             <button class="tab-btn" id="navBloqueos" onclick="switchSection('bloqueos')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-solid fa-ban"></i> Bloqueo de Fechas</button>
+            <button class="tab-btn" id="navCalendarioGral" onclick="switchSection('calendarioGral')" style="font-size: 1rem; padding: 10px 20px;"><i class="fa-regular fa-calendar"></i> Calendario General</button>
         </div>
 
         <!-- SECCIÓN DE RESERVAS -->
@@ -1237,6 +1262,54 @@
                         </div>
                     </div>
                 </div>
+        </div>
+
+        <!-- SECCIÓN DE CALENDARIO GENERAL -->
+        <div id="sectionCalendarioGral" style="display: none;">
+            <div class="pricing-container" style="grid-template-columns: 1.2fr 1fr;">
+                <!-- Left Column: Unified View Calendar -->
+                <div class="pricing-card">
+                    <h3><i class="fa-regular fa-calendar"></i> Calendario General</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                        Vista general y unificada de todas las fechas. Las fechas marcadas en <strong style="color: #2ec4b6;">verde suave</strong> corresponden a reservas confirmadas o pendientes, y las marcadas en <strong style="color: #ff5e62;">rojo suave</strong> son bloqueos manuales.
+                    </p>
+                    <div class="calendar-wrapper">
+                        <input type="text" id="adminGralPicker" class="hidden-input">
+                    </div>
+                </div>
+
+                <!-- Right Column: Details & Legend -->
+                <div class="pricing-card">
+                    <h3><i class="fa-solid fa-circle-info"></i> Información y Leyenda</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+                        <div style="display: flex; align-items: center; gap: 12px; background: rgba(46, 196, 182, 0.1); border: 1px solid rgba(46, 196, 182, 0.2); padding: 12px 15px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background: rgba(46, 196, 182, 0.25); border: 1px solid rgba(46, 196, 182, 0.6); border-radius: 4px;"></div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 600; color: #fff; font-size: 0.95rem;">Días Ocupados (Reserva)</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Clientes y huéspedes hospedados</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; background: rgba(231, 29, 54, 0.1); border: 1px solid rgba(231, 29, 54, 0.2); padding: 12px 15px; border-radius: 8px;">
+                            <div style="width: 20px; height: 20px; background: rgba(231, 29, 54, 0.25); border: 1px solid rgba(231, 29, 54, 0.6); border-radius: 4px;"></div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 600; color: #fff; font-size: 0.95rem;">Fechas Bloqueadas</span>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Airbnb, mantenimiento u otros bloqueos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                        <h4 style="font-size: 1.1rem; color: var(--gold); margin-bottom: 15px;"><i class="fa-regular fa-calendar-days"></i> Detalle del Día</h4>
+                        <div id="gralSelectedDateDisplay" style="font-size: 0.95rem; font-weight: 600; color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; background: rgba(196,165,117,0.1); padding: 10px 15px; border-radius: 6px;">
+                            <i class="fa-regular fa-calendar"></i> Toca una fecha para ver detalles
+                        </div>
+                        <div id="gralDateDetails" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0;">Selecciona cualquier día con color en el calendario para ver la reserva o el motivo de bloqueo.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1270,6 +1343,7 @@
             document.getElementById('sectionReservas').style.display = 'none';
             document.getElementById('sectionTarifas').style.display = 'none';
             document.getElementById('sectionBloqueos').style.display = 'none';
+            document.getElementById('sectionCalendarioGral').style.display = 'none';
             
             if (section === 'reservas') {
                 document.getElementById('navReservas').classList.add('active');
@@ -1282,6 +1356,10 @@
                 document.getElementById('navBloqueos').classList.add('active');
                 document.getElementById('sectionBloqueos').style.display = 'block';
                 initAdminBlockPicker();
+            } else if (section === 'calendarioGral') {
+                document.getElementById('navCalendarioGral').classList.add('active');
+                document.getElementById('sectionCalendarioGral').style.display = 'block';
+                initAdminGralPicker();
             }
         }
 
@@ -1354,6 +1432,115 @@
             
             loadAdminPricing();
             renderActiveBlocks();
+        }
+
+        // --- GENERAL CALENDAR VIEW MANAGEMENT ---
+        let adminGralPicker = null;
+
+        function initAdminGralPicker() {
+            if (adminGralPicker) {
+                adminGralPicker.redraw();
+                return;
+            }
+            
+            adminGralPicker = flatpickr("#adminGralPicker", {
+                inline: true,
+                mode: "single",
+                minDate: "today",
+                locale: "es",
+                showMonths: 1,
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = formatForAPI(dayElem.dateObj);
+                    // Buscar si hay reserva o bloqueo para el día
+                    const booking = allBookings.find(b => dateStr >= b.checkIn && dateStr < b.checkOut);
+                    if (booking) {
+                        const isBlock = booking.name.toUpperCase().startsWith('BLOQUEO');
+                        if (isBlock) {
+                            dayElem.classList.add('is-blocking');
+                        } else {
+                            dayElem.classList.add('is-reservation');
+                        }
+                    }
+                },
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length > 0) {
+                        const selectedDate = selectedDates[0];
+                        const dateStrAPI = formatForAPI(selectedDate);
+                        
+                        const dateVisual = selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                        document.getElementById('gralSelectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar-check"></i> ${dateVisual}`;
+                        
+                        const booking = allBookings.find(b => dateStrAPI >= b.checkIn && dateStrAPI < b.checkOut);
+                        const detailsEl = document.getElementById('gralDateDetails');
+                        
+                        if (booking) {
+                            const isBlock = booking.name.toUpperCase().startsWith('BLOQUEO');
+                            if (isBlock) {
+                                detailsEl.innerHTML = `
+                                    <div style="background: rgba(231, 29, 54, 0.1); border: 1px solid rgba(231, 29, 54, 0.25); border-radius: 8px; padding: 20px; text-align: left;">
+                                        <h4 style="color: #ff5e62; font-size: 1.1rem; margin-bottom: 10px;"><i class="fa-solid fa-ban"></i> Fechas Bloqueadas</h4>
+                                        <p style="margin-bottom: 8px; font-weight: 600; color: #fff;">${booking.name}</p>
+                                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Estadía: ${booking.checkIn} al ${booking.checkOut}</p>
+                                        <button class="btn-danger-outline" onclick="deleteBlockDirectly('${booking.id}')" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 10px;"><i class="fa-solid fa-trash-can"></i> Eliminar Bloqueo</button>
+                                    </div>
+                                `;
+                            } else {
+                                const checkInDate = new Date(booking.checkIn + 'T00:00:00');
+                                const checkOutDate = new Date(booking.checkOut + 'T00:00:00');
+                                const timeDiff = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+                                const nightsCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                                const cleanWhatsapp = booking.whatsapp.replace(/\+/g, '').replace(/\s/g, '').replace(/-/g, '');
+                                
+                                detailsEl.innerHTML = `
+                                    <div style="background: rgba(46, 196, 182, 0.08); border: 1px solid rgba(46, 196, 182, 0.2); border-radius: 8px; padding: 20px; text-align: left; display: flex; flex-direction: column; gap: 12px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <h4 style="color: #2ec4b6; font-size: 1.1rem;"><i class="fa-regular fa-calendar-check"></i> Detalle de Reserva</h4>
+                                            <span class="status-chip ${booking.status === 'confirmed' ? 'status-confirmed' : 'status-pending'}"><span class="dot"></span>${booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}</span>
+                                        </div>
+                                        <div>
+                                            <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Cliente</span>
+                                            <p style="font-size: 1.25rem; font-weight: 600; color: #fff;">${booking.name}</p>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                            <div>
+                                                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">WhatsApp</span>
+                                                <p style="font-size: 0.95rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><a href="https://wa.me/${cleanWhatsapp}" target="_blank" style="color: var(--gold); text-decoration: none;"><i class="fa-brands fa-whatsapp"></i> ${booking.whatsapp}</a></p>
+                                            </div>
+                                            <div>
+                                                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Correo</span>
+                                                <p style="font-size: 0.95rem; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"><a href="mailto:${booking.email}" style="color: var(--gold); text-decoration: none;"><i class="fa-regular fa-envelope"></i> ${booking.email}</a></p>
+                                            </div>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px;">
+                                            <div>
+                                                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Estadía</span>
+                                                <p style="font-size: 0.9rem; color: #fff;"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} al ${booking.checkOut}</p>
+                                            </div>
+                                            <div>
+                                                <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Huéspedes</span>
+                                                <p style="font-size: 0.95rem; color: #fff;"><i class="fa-solid fa-user-group"></i> ${booking.guests} ${booking.guests === 1 ? 'Persona' : 'Personas'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            detailsEl.innerHTML = `
+                                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; text-align: center; color: var(--text-muted);">
+                                    <i class="fa-regular fa-calendar" style="font-size: 2rem; color: var(--gold); margin-bottom: 12px; display: block;"></i>
+                                    <p style="font-size: 0.95rem; color: #fff; margin-bottom: 4px;">Día Disponible</p>
+                                    <p style="font-size: 0.8rem;">No hay reservas ni bloqueos para el día seleccionado.</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        document.getElementById('gralSelectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar"></i> Toca una fecha para ver detalles`;
+                        document.getElementById('gralDateDetails').innerHTML = `
+                            <div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0;">Selecciona cualquier día con color en el calendario para ver la reserva o el motivo de bloqueo.</div>
+                        `;
+                    }
+                }
+            });
         }
 
         const formatForAPI = (date) => {
@@ -1548,6 +1735,14 @@
                 
                 if (adminPricePicker) adminPricePicker.redraw();
                 if (adminBlockPicker) adminBlockPicker.redraw();
+                if (adminGralPicker) {
+                    adminGralPicker.clear();
+                    adminGralPicker.redraw();
+                }
+                document.getElementById('gralSelectedDateDisplay').innerHTML = `<i class="fa-regular fa-calendar"></i> Toca una fecha para ver detalles`;
+                document.getElementById('gralDateDetails').innerHTML = `
+                    <div style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0;">Selecciona cualquier día con color en el calendario para ver la reserva o el motivo de bloqueo.</div>
+                `;
             })
             .catch(err => showToast(err.message, 'error'));
         }
@@ -1596,6 +1791,7 @@
                 
                 if (adminPricePicker) adminPricePicker.redraw();
                 if (adminBlockPicker) adminBlockPicker.redraw();
+                if (adminGralPicker) adminGralPicker.redraw();
             })
             .catch(err => showToast(err.message, 'error'));
         }
@@ -1627,6 +1823,7 @@
                 updateStats(allBookings);
                 renderBookings();
                 renderActiveBlocks();
+                if (adminGralPicker) adminGralPicker.redraw();
             })
             .catch(err => {
                 console.error(err);
@@ -1782,6 +1979,7 @@
                     allBookings[index].status = 'confirmed';
                     updateStats(allBookings);
                     renderBookings();
+                    if (adminGralPicker) adminGralPicker.redraw();
                 }
 
                 // Generar mensaje de confirmación para WhatsApp
@@ -1862,12 +2060,20 @@
                         allBookings = allBookings.filter(b => b.id !== id);
                         updateStats(allBookings);
                         renderBookings();
+                        if (adminGralPicker) {
+                            adminGralPicker.clear();
+                            adminGralPicker.redraw();
+                        }
                         closeConfirmModal();
                     }, 400);
                 } else {
                     allBookings = allBookings.filter(b => b.id !== id);
                     updateStats(allBookings);
                     renderBookings();
+                    if (adminGralPicker) {
+                        adminGralPicker.clear();
+                        adminGralPicker.redraw();
+                    }
                     closeConfirmModal();
                 }
 
