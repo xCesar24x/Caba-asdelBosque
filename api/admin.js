@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET' && req.query && req.query.type === 'pricing') {
     try {
-      let pricing = { basePrice: 19000, customPrices: {} };
+      let pricing = { basePrice: 25000, customPrices: {} };
       if (cosmicBucketSlug && cosmicReadKey) {
         try {
           const pricingRes = await cosmic.objects.find({
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
           }).props('metadata').limit(1);
           if (pricingRes.objects && pricingRes.objects.length > 0) {
             const meta = pricingRes.objects[0].metadata;
-            pricing.basePrice = Number(meta.base_price) || 19000;
+            pricing.basePrice = Number(meta.base_price) || 25000;
             if (meta.custom_prices) {
               try {
                 pricing.customPrices = typeof meta.custom_prices === 'string' ? JSON.parse(meta.custom_prices) : meta.custom_prices;

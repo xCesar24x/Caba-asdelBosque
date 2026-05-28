@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Initialize Pricing Variables and Helpers ---
-    let pricingData = { basePrice: 19000, customPrices: {} };
+    let pricingData = { basePrice: 25000, customPrices: {} };
 
     // Format dates to YYYY-MM-DD for the API
     const formatForAPI = (date) => {

@@ -1140,7 +1140,7 @@
                     <div class="pricing-form-group">
                         <label>Precio Base Global (por noche)</label>
                         <div style="display: flex; gap: 10px;">
-                            <input type="number" id="basePriceInput" class="pricing-input" value="19000" placeholder="Ej. 19000">
+                            <input type="number" id="basePriceInput" class="pricing-input" value="25000" placeholder="Ej. 25000">
                             <button class="btn-gold" onclick="updateBasePrice()"><i class="fa-solid fa-check"></i> Actualizar</button>
                         </div>
                         <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; display: block;">Se aplica a todos los días que no tengan una tarifa personalizada fija.</span>
@@ -1214,7 +1214,7 @@
 
         // --- PRICING & LOCKS CALENDAR MANAGEMENT ---
         let adminPricePicker = null;
-        let adminPricingData = { basePrice: 19000, customPrices: {} };
+        let adminPricingData = { basePrice: 25000, customPrices: {} };
         let adminBlockedDates = [];
 
         function initAdminPricePicker() {
@@ -1266,7 +1266,7 @@
                 })
                 .then(data => {
                     adminPricingData = data;
-                    document.getElementById('basePriceInput').value = data.basePrice || 19000;
+                    document.getElementById('basePriceInput').value = data.basePrice || 25000;
                     if (adminPricePicker) adminPricePicker.redraw();
                 })
                 .catch(err => {
