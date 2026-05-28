@@ -1844,12 +1844,15 @@
             
             listEl.innerHTML = '';
             
+            // Filtrar para excluir bloqueos manuales y objeto de configuración de tarifas
+            const realBookings = allBookings.filter(b => !b.name.toUpperCase().startsWith('BLOQUEO') && b.name !== 'SETTINGS_PRICING');
+            
             // Filtrar reservas
-            let filtered = allBookings;
+            let filtered = realBookings;
             if (activeFilter === 'pending') {
-                filtered = allBookings.filter(b => b.status === 'pending');
+                filtered = realBookings.filter(b => b.status === 'pending');
             } else if (activeFilter === 'confirmed') {
-                filtered = allBookings.filter(b => b.status === 'confirmed');
+                filtered = realBookings.filter(b => b.status === 'confirmed');
             }
 
             if (filtered.length === 0) {
@@ -1935,9 +1938,11 @@
 
         // --- ACTUALIZAR MÁS CLAVES ---
         function updateStats(bookings) {
-            const total = bookings.length;
-            const pending = bookings.filter(b => b.status === 'pending').length;
-            const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+            // Filtrar para excluir bloqueos manuales y objeto de configuración de tarifas en las estadísticas
+            const realBookings = bookings.filter(b => !b.name.toUpperCase().startsWith('BLOQUEO') && b.name !== 'SETTINGS_PRICING');
+            const total = realBookings.length;
+            const pending = realBookings.filter(b => b.status === 'pending').length;
+            const confirmed = realBookings.filter(b => b.status === 'confirmed').length;
 
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statPending').innerText = pending;
