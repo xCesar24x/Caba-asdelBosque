@@ -187,7 +187,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
       console.error('Error POST booking:', error);
-      return res.status(500).json({ error: 'Error interno al procesar la reserva' });
+      return res.status(500).json({ error: 'Error interno al procesar la reserva: ' + error.message });
     }
   }
 
