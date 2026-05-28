@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Fetch blocked dates and pricing from backend
-    fetch('/api/bookings')
+    fetch('/api/bookings?t=' + Date.now())
         .then(response => response.json())
         .then(data => {
             if (data.pricing) {

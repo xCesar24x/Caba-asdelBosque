@@ -1558,13 +1558,16 @@
         };
 
         function loadAdminPricing() {
-            fetch('/api/admin?type=pricing')
+            fetch('/api/admin?type=pricing&t=' + Date.now())
                 .then(res => {
                     if (!res.ok) throw new Error('Error al cargar precios');
                     return res.json();
                 })
                 .then(data => {
                     adminPricingData = data;
+                    if (!adminPricingData.customPrices) {
+                        adminPricingData.customPrices = {};
+                    }
                     document.getElementById('basePriceInput').value = data.basePrice || 25000;
                     if (adminPricePicker) adminPricePicker.redraw();
                 })
@@ -1572,7 +1575,6 @@
                     console.error(err);
                     showToast('Error al cargar tarifas', 'error');
                 });
-
         }
 
         function updateBasePrice() {
@@ -1812,7 +1814,7 @@
             emptyEl.style.display = 'none';
             listEl.style.display = 'none';
 
-            return fetch('/api/admin', {
+            return fetch('/api/admin?t=' + Date.now(), {
                 method: 'GET'
             })
             .then(res => {
