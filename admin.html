@@ -116,8 +116,8 @@
         }
 
         .lock-logo {
-            height: 80px;
-            margin-bottom: 20px;
+            height: 160px;
+            margin-bottom: 25px;
             object-fit: contain;
         }
 
@@ -216,7 +216,7 @@
         }
 
         .header-logo {
-            height: 60px;
+            height: 110px;
             object-fit: contain;
         }
 
@@ -1830,7 +1830,7 @@
             const passwordInput = document.getElementById('adminPassword');
             const errorEl = document.getElementById('lockError');
             
-            if (passwordInput.value === 'Chalet') {
+            if (passwordInput && passwordInput.value.trim().toLowerCase() === 'chalet') {
                 localStorage.setItem('admin_authenticated', 'true');
                 const lockScreen = document.getElementById('lockScreen');
                 if (lockScreen) lockScreen.classList.add('hidden');

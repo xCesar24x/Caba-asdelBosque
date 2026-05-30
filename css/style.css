@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 .nav-logo {
-    height: 50px;
+    height: 90px;
     object-fit: contain;
 }
 
@@ -530,7 +530,7 @@ span.flatpickr-weekday {
     gap: 20px;
 }
 .footer-logo img {
-    height: 60px;
+    height: 110px;
 }
 .footer-logo p {
     color: var(--text-muted);
