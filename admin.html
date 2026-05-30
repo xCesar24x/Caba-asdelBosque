@@ -1096,13 +1096,26 @@
     <div class="admin-bg"></div>
     <div class="admin-bg-overlay"></div>
 
-
+    <!-- PANTALLA DE BLOQUEO / LOGIN -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-card">
+            <img src="logopng.png" alt="Cabañas del Bosque" class="lock-logo" onerror="this.style.display='none'">
+            <h2 class="lock-title">Panel de Control</h2>
+            <p class="lock-subtitle">Introduce la contraseña de acceso</p>
+            <div class="pin-wrapper">
+                <i class="fa-solid fa-lock pin-icon"></i>
+                <input type="password" id="adminPassword" class="pin-input" placeholder="••••••••" onkeydown="if(event.key === 'Enter') checkPassword()">
+            </div>
+            <button class="btn-unlock" onclick="checkPassword()">INGRESAR</button>
+            <div id="lockError" class="lock-error">Contraseña incorrecta</div>
+        </div>
+    </div>
 
     <!-- CONTENIDO DEL DASHBOARD -->
     <div class="container">
         <header class="dashboard-header">
             <div class="logo-section">
-                <img src="Logo.png" alt="Cabañas del Bosque" class="header-logo" onerror="this.style.display='none'">
+                <img src="logopng.png" alt="Cabañas del Bosque" class="header-logo" onerror="this.style.display='none'">
                 <div class="header-title-wrapper">
                     <h1>Cabañas del Bosque</h1>
                     <p>Módulo de Gestión de Reservas · Angeles Norte de San Ramón</p>
@@ -1110,6 +1123,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn-secundary" onclick="fetchBookings()"><i class="fa-solid fa-arrows-rotate"></i> Actualizar</button>
+                <button class="btn-secundary btn-logout" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
             </div>
         </header>
 
@@ -1799,13 +1813,59 @@
             .catch(err => showToast(err.message, 'error'));
         }
 
-        // Cargar las reservas de inmediato al iniciar
+        // Cargar las reservas de inmediato al iniciar o requerir login
         document.addEventListener('DOMContentLoaded', () => {
-            fetchBookings();
+            if (localStorage.getItem('admin_authenticated') === 'true') {
+                const lockScreen = document.getElementById('lockScreen');
+                if (lockScreen) lockScreen.classList.add('hidden');
+                fetchBookings();
+            } else {
+                const lockScreen = document.getElementById('lockScreen');
+                if (lockScreen) lockScreen.classList.remove('hidden');
+            }
         });
+
+        // --- PASSWORD CHECK & LOGOUT ---
+        function checkPassword() {
+            const passwordInput = document.getElementById('adminPassword');
+            const errorEl = document.getElementById('lockError');
+            
+            if (passwordInput.value === 'Chalet') {
+                localStorage.setItem('admin_authenticated', 'true');
+                const lockScreen = document.getElementById('lockScreen');
+                if (lockScreen) lockScreen.classList.add('hidden');
+                errorEl.style.display = 'none';
+                fetchBookings();
+            } else {
+                errorEl.style.display = 'block';
+                // Animación shake en la tarjeta
+                const card = document.querySelector('.lock-card');
+                if (card) {
+                    card.style.animation = 'none';
+                    void card.offsetWidth; // trigger reflow
+                    card.style.animation = 'shake 0.4s ease';
+                }
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('admin_authenticated');
+            const passwordInput = document.getElementById('adminPassword');
+            if (passwordInput) passwordInput.value = '';
+            const lockScreen = document.getElementById('lockScreen');
+            if (lockScreen) lockScreen.classList.remove('hidden');
+            const errorEl = document.getElementById('lockError');
+            if (errorEl) errorEl.style.display = 'none';
+        }
 
         // --- FETCH RESERVAS ---
         function fetchBookings() {
+            if (localStorage.getItem('admin_authenticated') !== 'true') {
+                return Promise.resolve();
+            }
+            
             const loadingEl = document.getElementById('loadingState');
             const emptyEl = document.getElementById('emptyState');
             const listEl = document.getElementById('bookingsList');
