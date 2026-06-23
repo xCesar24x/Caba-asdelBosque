@@ -148,6 +148,17 @@ export default async function handler(req, res) {
       });
 
       const uniqueBlockedDates = [...new Set(blockedDates)];
+      if (req.query.debug === 'true') {
+        return res.status(200).json({
+          blockedDates: uniqueBlockedDates,
+          pricing: pricing,
+          rawEvents: events.map(e => ({
+            summary: e.summary,
+            start: e.start,
+            end: e.end
+          }))
+        });
+      }
       return res.status(200).json({ 
         blockedDates: uniqueBlockedDates,
         pricing: pricing
