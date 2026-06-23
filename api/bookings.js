@@ -119,6 +119,7 @@ export default async function handler(req, res) {
            // En javascript 'YYYY-MM-DD' asume UTC. Usamos formato con T00:00:00
            const start = new Date(b.metadata.check_in + 'T00:00:00');
            const end = new Date(b.metadata.check_out + 'T00:00:00');
+           end.setDate(end.getDate() - 1); // El check-out es libre para una nueva reserva
            blockedDates.push(...getDatesInRange(start, end));
         }
       });
