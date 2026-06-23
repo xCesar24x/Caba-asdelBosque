@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialize Pricing Variables and Helpers ---
     let pricingData = { basePrice: 25000, customPrices: {} };
+    let blockedDates = [];
 
     // Format dates to YYYY-MM-DD for the API
     const formatForAPI = (date) => {
@@ -94,15 +95,42 @@ document.addEventListener('DOMContentLoaded', () => {
         locale: "es", // Spanish locale
         showMonths: 1,
         disableMobile: true, // Forces custom UI on mobile
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const dateStr = formatForAPI(dayElem.dateObj);
+            if (blockedDates.includes(dateStr)) {
+                dayElem.classList.add("flatpickr-disabled");
+                dayElem.setAttribute("aria-disabled", "true");
+            }
+        },
         onChange: function(selectedDates, dateStr, instance) {
             const previewEl = document.getElementById('pricePreview');
             if (selectedDates.length === 2) {
                 const start = selectedDates[0];
                 const end = selectedDates[1];
                 
+                // Validate if any date in the range is blocked
+                let current = new Date(start);
+                let hasBlockedDate = false;
+                while (current <= end) {
+                    const currentStr = formatForAPI(current);
+                    if (blockedDates.includes(currentStr)) {
+                        hasBlockedDate = true;
+                        break;
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+                
+                if (hasBlockedDate) {
+                    alert("Lo sentimos, el periodo seleccionado incluye fechas que ya están reservadas. Por favor selecciona otro rango de fechas libres.");
+                    instance.clear();
+                    previewEl.style.display = 'none';
+                    previewEl.innerHTML = '';
+                    return;
+                }
+                
                 let total = 0;
                 let nightsCount = 0;
-                let current = new Date(start);
+                current = new Date(start);
                 
                 let explanationHtml = '';
                 
@@ -148,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pricingData = data.pricing;
             }
             if (data.blockedDates && data.blockedDates.length > 0) {
-                datePicker.set('disable', data.blockedDates);
+                blockedDates = data.blockedDates;
             }
             datePicker.redraw();
         })
