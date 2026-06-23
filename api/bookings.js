@@ -133,6 +133,7 @@ export default async function handler(req, res) {
         } else if (e.start && e.start.dateTime && e.end && e.end.dateTime) {
             const start = new Date(e.start.dateTime);
             const end = new Date(e.end.dateTime);
+            end.setDate(end.getDate() - 1); // También restamos 1 para liberar el día de salida
             blockedDates.push(...getDatesInRange(start, end));
         }
       });
