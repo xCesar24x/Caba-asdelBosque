@@ -133,7 +133,16 @@ export default async function handler(req, res) {
         } else if (e.start && e.start.dateTime && e.end && e.end.dateTime) {
             const start = new Date(e.start.dateTime);
             const end = new Date(e.end.dateTime);
-            end.setDate(end.getDate() - 1); // También restamos 1 para liberar el día de salida
+            
+            // Si el evento termina en un día diferente al que empieza, restamos 1 día al final 
+            // (porque es una reserva de varias noches y el último día es el Check-out libre).
+            // Si empieza y termina el mismo día, es un bloqueo de un solo día (ej. mantenimiento) y debe bloquearse ese día completo.
+            const startDateStr = e.start.dateTime.split('T')[0];
+            const endDateStr = e.end.dateTime.split('T')[0];
+            if (startDateStr !== endDateStr) {
+                end.setDate(end.getDate() - 1);
+            }
+            
             blockedDates.push(...getDatesInRange(start, end));
         }
       });
